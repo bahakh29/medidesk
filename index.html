@@ -2,7 +2,7 @@
 <html lang="en" data-theme="blue">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>MediDesk - Clinical EHR & Management System</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,7 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="antialiased">
+<body class="antialiased min-h-screen bg-app text-app transition-colors duration-200">
 
   <!-- AUTOCOMPLETE DATALISTS -->
   <datalist id="dl-diseases"></datalist>
@@ -23,28 +23,28 @@
   <datalist id="dl-allergies"></datalist>
 
   <!-- AUTH SCREEN -->
-  <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-100">
+  <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-8">
+    <div class="max-w-md w-full card-app rounded-2xl shadow-2xl p-6 sm:p-8 border border-app">
       <div class="text-center mb-6">
-        <div class="inline-flex items-center justify-center w-16 h-16 theme-light-bg theme-primary-text rounded-2xl mb-3 shadow-inner">
+        <div id="auth-logo-container" class="inline-flex items-center justify-center w-16 h-16 theme-light-bg theme-primary-text rounded-2xl mb-3 shadow-inner">
           <i id="auth-app-icon" data-lucide="stethoscope" class="w-8 h-8"></i>
         </div>
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">MediDesk</h1>
-        <p class="text-slate-500 text-xs uppercase tracking-wider font-semibold mt-1">Clinical Portal</p>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-app tracking-tight">MediDesk</h1>
+        <p class="text-muted text-xs uppercase tracking-wider font-semibold mt-1">Clinical Portal</p>
       </div>
 
-      <div id="auth-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-medium"></div>
+      <div id="auth-error" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 text-red-500 rounded-xl text-xs font-medium"></div>
 
       <form id="login-form" class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Doctor Email</label>
-          <input type="email" id="auth-email" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2" placeholder="dr.smith@medidesk.com">
+          <label class="block text-xs font-bold text-muted uppercase mb-1">Doctor Email</label>
+          <input type="email" id="auth-email" required class="input-app w-full px-4 py-2.5 rounded-xl text-sm focus:ring-2" placeholder="dr.smith@medidesk.com">
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label>
-          <input type="password" id="auth-password" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2" placeholder="••••••••">
+          <label class="block text-xs font-bold text-muted uppercase mb-1">Password</label>
+          <input type="password" id="auth-password" required class="input-app w-full px-4 py-2.5 rounded-xl text-sm focus:ring-2" placeholder="••••••••">
         </div>
-        <button type="submit" id="btn-login" class="w-full theme-primary-bg theme-primary-bg-hover text-white font-semibold py-2.5 rounded-xl shadow-md transition">Sign In</button>
+        <button type="submit" id="btn-login" class="w-full theme-primary-bg theme-primary-bg-hover text-white font-semibold py-2.5 rounded-xl shadow-md transition text-sm">Sign In</button>
       </form>
     </div>
   </div>
@@ -52,57 +52,58 @@
   <!-- MAIN APP CONTAINER -->
   <div id="app-screen" class="hidden min-h-screen flex flex-col">
     <!-- NAVIGATION HEADER -->
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+    <header class="header-app text-white shadow-lg sticky top-0 z-40 border-b border-app">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center gap-2">
         <div class="flex items-center space-x-3 cursor-pointer" id="nav-brand">
-          <i id="header-app-icon" data-lucide="stethoscope" class="w-7 h-7 theme-primary-text"></i>
-          <span class="text-xl font-bold tracking-tight">MediDesk</span>
+          <div id="header-logo-container" class="flex items-center justify-center">
+            <i id="header-app-icon" data-lucide="stethoscope" class="w-7 h-7 theme-primary-text"></i>
+          </div>
+          <span class="text-lg sm:text-xl font-bold tracking-tight">MediDesk</span>
         </div>
-        <div class="flex items-center space-x-3">
-          <button id="btn-admin-panel" class="hidden bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 shadow-sm transition">
+        <div class="flex items-center space-x-1.5 sm:space-x-3">
+          <button id="btn-admin-panel" class="hidden bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 shadow-sm transition">
             <i data-lucide="shield-check" class="w-4 h-4"></i>
-            <span>Admin Control</span>
+            <span class="hidden sm:inline">Admin Control</span>
           </button>
 
-          <button id="btn-theme-modal" title="Layout Theme" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-xl border border-slate-700 flex items-center space-x-1 text-xs">
+          <button id="btn-theme-modal" title="Layout Theme" class="btn-secondary-app p-2 rounded-xl flex items-center space-x-1 text-xs font-medium">
             <i data-lucide="palette" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Theme</span>
+            <span class="hidden md:inline">Theme</span>
           </button>
 
-          <!-- TOP RIGHT DOCTOR PROFILE DISPLAY & BUTTON -->
-          <button id="btn-my-profile" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center space-x-2 text-xs font-semibold">
+          <button id="btn-my-profile" class="btn-secondary-app px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center space-x-1.5 text-xs font-semibold">
             <i data-lucide="user" class="w-4 h-4 theme-primary-text"></i>
-            <span id="user-display">Dr. Account</span>
+            <span id="user-display" class="max-w-[100px] sm:max-w-none truncate">Dr. Account</span>
           </button>
           
-          <button id="btn-backup" title="Backup Database" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-xl border border-slate-700 flex items-center space-x-1 text-xs">
+          <button id="btn-backup" title="Backup Database" class="btn-secondary-app p-2 rounded-xl flex items-center space-x-1 text-xs">
             <i data-lucide="database-backup" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Backup</span>
+            <span class="hidden md:inline">Backup</span>
           </button>
-          <button id="btn-logout" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm">
+          <button id="btn-logout" class="bg-red-600 hover:bg-red-700 text-white px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm">
             <i data-lucide="log-out" class="w-4 h-4"></i>
-            <span>Logout</span>
+            <span class="hidden sm:inline">Logout</span>
           </button>
         </div>
       </div>
     </header>
 
     <!-- MAIN BODY -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-6">
 
       <!-- SECTION 1: PATIENT DIRECTORY -->
       <section id="directory-section" class="space-y-6">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Patient Directory</h2>
-            <p class="text-slate-500 text-xs">Manage patient electronic health records and clinical history.</p>
+            <h2 class="text-xl sm:text-2xl font-black text-app tracking-tight">Patient Directory</h2>
+            <p class="text-muted text-xs">Manage patient electronic health records and clinical history.</p>
           </div>
-          <div class="flex gap-2">
-            <button id="btn-export-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm">
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button id="btn-export-excel" class="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 shadow-sm">
               <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
               <span>Export Excel</span>
             </button>
-            <button id="btn-add-patient" class="theme-primary-bg theme-primary-bg-hover text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm">
+            <button id="btn-add-patient" class="flex-1 sm:flex-initial theme-primary-bg theme-primary-bg-hover text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center justify-center space-x-2 shadow-sm">
               <i data-lucide="user-plus" class="w-4 h-4"></i>
               <span>Add Patient</span>
             </button>
@@ -110,47 +111,47 @@
         </div>
 
         <!-- FILTERS -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div class="card-app rounded-2xl shadow-sm border border-app p-4 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Search Patient</label>
-              <input type="text" id="search-query" placeholder="Name, ID, Phone..." class="w-full px-3 py-2 border rounded-xl text-xs">
+              <label class="block text-[10px] font-bold text-muted uppercase tracking-wider mb-1">Search Patient</label>
+              <input type="text" id="search-query" placeholder="Name, ID, Phone..." class="input-app w-full px-3 py-2 rounded-xl text-xs">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Chronic Condition</label>
-              <input type="text" id="filter-disease" list="dl-diseases" placeholder="Type to search..." class="w-full px-3 py-2 border rounded-xl text-xs">
+              <label class="block text-[10px] font-bold text-muted uppercase tracking-wider mb-1">Chronic Condition</label>
+              <input type="text" id="filter-disease" list="dl-diseases" placeholder="Type to search..." class="input-app w-full px-3 py-2 rounded-xl text-xs">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Surgical History</label>
-              <input type="text" id="filter-surgery" list="dl-surgeries" placeholder="Type to search..." class="w-full px-3 py-2 border rounded-xl text-xs">
+              <label class="block text-[10px] font-bold text-muted uppercase tracking-wider mb-1">Surgical History</label>
+              <input type="text" id="filter-surgery" list="dl-surgeries" placeholder="Type to search..." class="input-app w-full px-3 py-2 rounded-xl text-xs">
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Medication</label>
-              <input type="text" id="filter-medication" list="dl-medications" placeholder="Type to search..." class="w-full px-3 py-2 border rounded-xl text-xs">
+              <label class="block text-[10px] font-bold text-muted uppercase tracking-wider mb-1">Medication</label>
+              <input type="text" id="filter-medication" list="dl-medications" placeholder="Type to search..." class="input-app w-full px-3 py-2 rounded-xl text-xs">
             </div>
           </div>
-          <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
+          <div class="flex justify-between items-center pt-2 border-t border-app text-xs text-muted">
             <span>Showing <strong id="patient-count" class="theme-primary-text font-bold">0</strong> patient records</span>
             <button id="btn-reset-filters" class="text-xs theme-primary-text font-semibold hover:underline">Reset Filters</button>
           </div>
         </div>
 
         <!-- DIRECTORY TABLE -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="card-app rounded-2xl shadow-sm border border-app overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+            <table class="w-full text-left text-xs min-w-[650px]">
+              <thead class="table-header-app border-b border-app text-muted font-bold uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th class="p-4">Patient Name</th>
-                  <th class="p-4">ID / National No.</th>
-                  <th class="p-4">Phone</th>
-                  <th class="p-4">DOB (Age)</th>
-                  <th class="p-4">Gender</th>
-                  <th class="p-4">BMI</th>
-                  <th class="p-4 text-right">Actions</th>
+                  <th class="p-3 sm:p-4">Patient Name</th>
+                  <th class="p-3 sm:p-4">ID / National No.</th>
+                  <th class="p-3 sm:p-4">Phone</th>
+                  <th class="p-3 sm:p-4">DOB (DD/MM/YYYY)</th>
+                  <th class="p-3 sm:p-4">Gender</th>
+                  <th class="p-3 sm:p-4">BMI</th>
+                  <th class="p-3 sm:p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody id="patients-table-body" class="divide-y divide-slate-100"></tbody>
+              <tbody id="patients-table-body" class="divide-y divide-app"></tbody>
             </table>
           </div>
         </div>
@@ -158,15 +159,19 @@
 
       <!-- SECTION 2: PATIENT PROFILE -->
       <section id="profile-section" class="hidden space-y-6">
-        <div class="flex justify-between items-center">
-          <button id="btn-back-directory" class="text-slate-600 hover:text-slate-900 flex items-center space-x-1 text-xs font-semibold">
+        <div class="flex justify-between items-center gap-2">
+          <button id="btn-back-directory" class="text-muted hover:text-app flex items-center space-x-1 text-xs font-semibold">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            <span>Back to Patients</span>
+            <span>Back to Directory</span>
           </button>
           <div class="flex gap-2">
-            <button id="btn-edit-patient-profile" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1">
+            <button id="btn-delete-patient-record" class="bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/30 px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Delete Patient</span>
+            </button>
+            <button id="btn-edit-patient-profile" class="btn-secondary-app px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1">
               <i data-lucide="user-cog" class="w-4 h-4"></i>
-              <span>Edit Patient Profile</span>
+              <span class="hidden sm:inline">Edit Profile</span>
             </button>
             <button id="btn-open-gemini" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
@@ -176,71 +181,71 @@
         </div>
 
         <!-- HEADER CARD -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <div class="card-app rounded-2xl shadow-sm border border-app p-4 sm:p-6 space-y-4">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <div class="flex items-center space-x-3">
-                <h1 id="p-name" class="text-3xl font-black text-slate-900 tracking-tight">--</h1>
-                <span id="p-gender-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 uppercase">--</span>
+                <h1 id="p-name" class="text-2xl sm:text-3xl font-black text-app tracking-tight">--</h1>
+                <span id="p-gender-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold theme-light-bg theme-primary-text uppercase">--</span>
               </div>
-              <p class="text-xs text-slate-500 mt-1">
-                ID: <span id="p-id" class="font-semibold text-slate-800">--</span> | 
-                DOB: <span id="p-dob" class="font-semibold text-slate-800">--</span> (<span id="p-age">--</span> yrs) | 
-                Phone: <span id="p-phone" class="font-semibold text-slate-800">--</span>
+              <p class="text-xs text-muted mt-1">
+                ID: <span id="p-id" class="font-semibold text-app">--</span> | 
+                DOB: <span id="p-dob" class="font-semibold text-app">--</span> (<span id="p-age">--</span> yrs) | 
+                Phone: <span id="p-phone" class="font-semibold text-app">--</span>
               </p>
             </div>
 
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center space-x-6">
+            <div class="w-full md:w-auto card-sub-app border border-app rounded-2xl p-4 flex items-center justify-between sm:justify-start space-x-6">
               <div>
-                <span class="block text-[10px] uppercase font-bold text-slate-400">Height / Weight</span>
-                <span id="p-height-weight" class="text-sm font-bold text-slate-800">-- cm / -- kg</span>
+                <span class="block text-[10px] uppercase font-bold text-muted">Height / Weight</span>
+                <span id="p-height-weight" class="text-sm font-bold text-app">-- cm / -- kg</span>
               </div>
-              <div class="border-l border-slate-200 pl-6">
-                <span class="block text-[10px] uppercase font-bold text-slate-400">Baseline BMI</span>
+              <div class="border-l border-app pl-6">
+                <span class="block text-[10px] uppercase font-bold text-muted">Baseline BMI</span>
                 <span id="p-bmi" class="text-lg font-black theme-primary-text">--</span>
-                <span id="p-bmi-cat" class="text-xs font-semibold ml-1 text-slate-500"></span>
+                <span id="p-bmi-cat" class="text-xs font-semibold ml-1 text-muted"></span>
               </div>
             </div>
           </div>
 
-          <!-- ALLERGIES -->
-          <div id="allergy-banner" class="bg-red-50/80 border border-red-200 rounded-xl p-3 flex justify-between items-center text-xs">
-            <div class="flex items-center space-x-2 text-red-900">
-              <i data-lucide="alert-circle" class="w-5 h-5 text-red-600 flex-shrink-0"></i>
+          <!-- ALLERGIES BANNER -->
+          <div id="allergy-banner" class="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex justify-between items-center text-xs">
+            <div class="flex items-center space-x-2 text-red-600 dark:text-red-400">
+              <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 flex-shrink-0"></i>
               <div>
                 <strong class="font-bold">Drug Allergies: </strong>
-                <span id="allergy-list-text" class="text-red-700">None Recorded</span>
+                <span id="allergy-list-text">None Recorded</span>
               </div>
             </div>
-            <button id="btn-add-allergy" class="text-[10px] bg-red-100 hover:bg-red-200 text-red-800 font-bold px-2 py-1 rounded-lg">+ Add Allergy</button>
+            <button id="btn-add-allergy" class="text-[10px] bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-300 font-bold px-2 py-1 rounded-lg">+ Add Allergy</button>
           </div>
         </div>
 
         <!-- PROFILE TABS -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="border-b border-slate-200 flex overflow-x-auto bg-slate-50/50" id="profile-tabs-header">
-            <button class="px-5 py-3 text-xs font-semibold tab-btn tab-active" data-tab="pmh-psh">Medical & Surgical History</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="meds">Chronic Medications</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="labs">Lab Results</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="lab-trends">Lab Trends & Graphs</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="visits">Visits & Notes</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="vitals">Vital Signs</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="radiology">Radiology</button>
+        <div class="card-app rounded-2xl shadow-sm border border-app overflow-hidden">
+          <div class="border-b border-app flex overflow-x-auto card-sub-app" id="profile-tabs-header">
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn tab-active whitespace-nowrap" data-tab="pmh-psh">Medical & Surgical History</button>
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn text-muted whitespace-nowrap" data-tab="meds">Chronic Medications</button>
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn text-muted whitespace-nowrap" data-tab="labs">Lab Results</button>
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn text-muted whitespace-nowrap" data-tab="lab-trends">Lab Trends & Graphs</button>
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn text-muted whitespace-nowrap" data-tab="visits">Visits & Notes</button>
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn text-muted whitespace-nowrap" data-tab="vitals">Vital Signs</button>
+            <button class="px-4 sm:px-5 py-3 text-xs font-semibold tab-btn text-muted whitespace-nowrap" data-tab="radiology">Radiology</button>
           </div>
 
-          <div class="p-6">
+          <div class="p-4 sm:p-6">
             <!-- TAB 1: PMH/PSH -->
             <div id="tab-pmh-psh" class="tab-content grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-3">
-                <div class="flex justify-between items-center border-b pb-2">
-                  <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 theme-primary-text"></i> Medical Conditions</h3>
+                <div class="flex justify-between items-center border-b border-app pb-2">
+                  <h3 class="font-bold text-app text-sm flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 theme-primary-text"></i> Medical Conditions</h3>
                   <button id="btn-add-pmh" class="text-[10px] theme-light-bg theme-primary-text font-bold px-2.5 py-1 rounded-lg">+ Add Condition</button>
                 </div>
                 <div id="pmh-list" class="space-y-2"></div>
               </div>
               <div class="space-y-3">
-                <div class="flex justify-between items-center border-b pb-2">
-                  <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="scissors" class="w-4 h-4 theme-primary-text"></i> Surgical History</h3>
+                <div class="flex justify-between items-center border-b border-app pb-2">
+                  <h3 class="font-bold text-app text-sm flex items-center gap-2"><i data-lucide="scissors" class="w-4 h-4 theme-primary-text"></i> Surgical History</h3>
                   <button id="btn-add-psh" class="text-[10px] theme-light-bg theme-primary-text font-bold px-2.5 py-1 rounded-lg">+ Add Surgery</button>
                 </div>
                 <div id="psh-list" class="space-y-2"></div>
@@ -249,67 +254,67 @@
 
             <!-- TAB 2: MEDS -->
             <div id="tab-meds" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Active Chronic Medications</h3>
+              <div class="flex justify-between items-center border-b border-app pb-2">
+                <h3 class="font-bold text-app text-sm">Active Chronic Medications</h3>
                 <button id="btn-add-med" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Add Medication</button>
               </div>
               <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 border-b text-[10px] font-bold uppercase text-slate-500">
+                <table class="w-full text-left text-xs min-w-[500px]">
+                  <thead class="table-header-app border-b border-app text-[10px] font-bold uppercase text-muted">
                     <tr><th class="p-3">Medication</th><th class="p-3">Dose</th><th class="p-3">Frequency</th><th class="p-3">Route</th><th class="p-3 text-right">Actions</th></tr>
                   </thead>
-                  <tbody id="meds-list" class="divide-y divide-slate-100"></tbody>
+                  <tbody id="meds-list" class="divide-y divide-app"></tbody>
                 </table>
               </div>
             </div>
 
             <!-- TAB 3: LABS TABLE -->
             <div id="tab-labs" class="tab-content hidden space-y-4">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-app pb-3">
                 <div>
-                  <h3 class="font-bold text-slate-800 text-sm">Laboratory Results</h3>
-                  <p class="text-[11px] text-slate-500">Filter lab tests or record new laboratory parameters.</p>
+                  <h3 class="font-bold text-app text-sm">Laboratory Results</h3>
+                  <p class="text-[11px] text-muted">Filter lab tests or record new laboratory parameters.</p>
                 </div>
                 <div class="flex gap-2 w-full sm:w-auto">
-                  <input type="text" id="lab-search-input" placeholder="Search lab results..." class="px-3 py-1.5 border rounded-xl text-xs w-full sm:w-48">
+                  <input type="text" id="lab-search-input" placeholder="Search lab results..." class="input-app px-3 py-1.5 rounded-xl text-xs w-full sm:w-48">
                   <button id="btn-add-lab" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl flex-shrink-0">+ Add Lab</button>
                 </div>
               </div>
 
               <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 border-b text-[10px] font-bold uppercase text-slate-500">
-                    <tr><th class="p-3">Test Date</th><th class="p-3">Lab Name</th><th class="p-3">Result</th><th class="p-3">Normal Range</th><th class="p-3">Source</th><th class="p-3 text-right">Actions</th></tr>
+                <table class="w-full text-left text-xs min-w-[600px]">
+                  <thead class="table-header-app border-b border-app text-[10px] font-bold uppercase text-muted">
+                    <tr><th class="p-3">Test Date (DD/MM/YYYY)</th><th class="p-3">Lab Name</th><th class="p-3">Result</th><th class="p-3">Normal Range</th><th class="p-3">Source</th><th class="p-3 text-right">Actions</th></tr>
                   </thead>
-                  <tbody id="labs-list" class="divide-y divide-slate-100"></tbody>
+                  <tbody id="labs-list" class="divide-y divide-app"></tbody>
                 </table>
               </div>
             </div>
 
             <!-- TAB 4: LAB TRENDS GRAPHING -->
             <div id="tab-lab-trends" class="tab-content hidden space-y-4">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
+              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-app pb-3">
                 <div>
-                  <h3 class="font-bold text-slate-800 text-sm">Laboratory Longitudinal Trends</h3>
-                  <p class="text-[11px] text-slate-500">Plot lab parameter changes chronologically over time.</p>
+                  <h3 class="font-bold text-app text-sm">Laboratory Longitudinal Trends</h3>
+                  <p class="text-[11px] text-muted">Plot lab parameter changes chronologically over time.</p>
                 </div>
                 <div class="flex items-center space-x-2">
-                  <label class="text-xs font-bold text-slate-600 uppercase">Select Test:</label>
-                  <select id="lab-chart-select" class="px-3 py-1.5 border rounded-xl text-xs bg-white font-semibold outline-none">
+                  <label class="text-xs font-bold text-muted uppercase">Select Test:</label>
+                  <select id="lab-chart-select" class="input-app px-3 py-1.5 rounded-xl text-xs font-semibold outline-none">
                     <option value="">-- Choose Lab Test --</option>
                   </select>
                 </div>
               </div>
 
-              <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 h-80 w-full relative">
+              <div class="card-sub-app p-4 rounded-2xl border border-app h-80 w-full relative">
                 <canvas id="labTrendChart"></canvas>
               </div>
             </div>
 
             <!-- TAB 5: VISITS -->
             <div id="tab-visits" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Clinical Visits & Encounters</h3>
+              <div class="flex justify-between items-center border-b border-app pb-2">
+                <h3 class="font-bold text-app text-sm">Clinical Visits & Encounters</h3>
                 <button id="btn-add-visit" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Record New Visit</button>
               </div>
               <div id="visits-list" class="space-y-4"></div>
@@ -317,17 +322,17 @@
 
             <!-- TAB 6: VITALS -->
             <div id="tab-vitals" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Vital Signs History</h3>
+              <div class="flex justify-between items-center border-b border-app pb-2">
+                <h3 class="font-bold text-app text-sm">Vital Signs History</h3>
                 <button id="btn-add-vitals" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Record Vitals</button>
               </div>
-              <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 h-80"><canvas id="vitalsTrendChart"></canvas></div>
+              <div class="card-sub-app p-4 rounded-2xl border border-app h-80"><canvas id="vitalsTrendChart"></canvas></div>
             </div>
 
             <!-- TAB 7: RADIOLOGY -->
             <div id="tab-radiology" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Radiology & Imaging Links</h3>
+              <div class="flex justify-between items-center border-b border-app pb-2">
+                <h3 class="font-bold text-app text-sm">Radiology & Imaging Links</h3>
                 <button id="btn-add-radiology" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Add Radiology</button>
               </div>
               <div id="radiology-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
@@ -338,124 +343,155 @@
 
       <!-- SECTION 3: ADMIN DASHBOARD -->
       <section id="admin-section" class="hidden space-y-6">
-        <div class="flex justify-between items-center border-b pb-4">
+        <div class="flex justify-between items-center border-b border-app pb-4">
           <div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Admin Dashboard</h2>
-            <p class="text-slate-500 text-xs">Manage global settings, branding, default catalogs, and doctor accounts.</p>
+            <h2 class="text-2xl font-black text-app tracking-tight">Admin Dashboard</h2>
+            <p class="text-muted text-xs">Manage global settings, custom logo branding, default lab ranges, and doctor accounts.</p>
           </div>
-          <button id="btn-admin-close" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-xl font-semibold text-slate-700">Close Dashboard</button>
+          <button id="btn-admin-close" class="btn-secondary-app text-xs px-3 py-1.5 rounded-xl font-semibold">Close Dashboard</button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- BRANDING ICON -->
-          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 theme-primary-text"></i> App Icon Branding</h3>
-            <div class="grid grid-cols-3 gap-2 pt-2">
-              <button data-icon-option="stethoscope" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="stethoscope" class="w-5 h-5 theme-primary-text"></i> Stethoscope
-              </button>
-              <button data-icon-option="activity" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="activity" class="w-5 h-5 theme-primary-text"></i> Activity
-              </button>
-              <button data-icon-option="heart-pulse" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="heart-pulse" class="w-5 h-5 theme-primary-text"></i> Pulse
-              </button>
-              <button data-icon-option="cross" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="cross" class="w-5 h-5 theme-primary-text"></i> Cross
-              </button>
-              <button data-icon-option="shield-plus" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="shield-plus" class="w-5 h-5 theme-primary-text"></i> Shield
-              </button>
-              <button data-icon-option="building-2" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="building-2" class="w-5 h-5 theme-primary-text"></i> Hospital
-              </button>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- BRANDING & LOGO UPLOAD -->
+          <div class="card-app rounded-2xl shadow-sm border border-app p-5 space-y-4">
+            <h3 class="font-bold text-app text-sm flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 theme-primary-text"></i> App Branding & Custom Logo</h3>
+            <p class="text-[11px] text-muted">Select a preset medical icon or upload your clinic's logo image.</p>
+            
+            <!-- CUSTOM IMAGE LOGO UPLOAD -->
+            <div class="space-y-2 border-t border-app pt-3">
+              <label class="block text-[10px] font-bold uppercase text-muted">Upload Custom Image Logo</label>
+              <input type="file" id="admin-logo-file" accept="image/*" class="input-app w-full text-xs text-muted file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-800">
+              <div class="flex gap-2">
+                <input type="text" id="admin-logo-url" placeholder="or enter Image URL..." class="input-app w-full px-2.5 py-1.5 text-xs rounded-lg">
+                <button id="btn-save-custom-logo" class="theme-primary-bg text-white font-bold text-xs px-3 py-1.5 rounded-lg flex-shrink-0">Apply</button>
+              </div>
+            </div>
+
+            <!-- PRESET ICON OPTIONS -->
+            <div class="space-y-1 border-t border-app pt-3">
+              <label class="block text-[10px] font-bold uppercase text-muted">Or Choose Preset Icon</label>
+              <div class="grid grid-cols-3 gap-2">
+                <button data-icon-option="stethoscope" class="p-2.5 border border-app rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px] btn-secondary-app">
+                  <i data-lucide="stethoscope" class="w-5 h-5 theme-primary-text"></i> Stethoscope
+                </button>
+                <button data-icon-option="activity" class="p-2.5 border border-app rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px] btn-secondary-app">
+                  <i data-lucide="activity" class="w-5 h-5 theme-primary-text"></i> Activity
+                </button>
+                <button data-icon-option="heart-pulse" class="p-2.5 border border-app rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px] btn-secondary-app">
+                  <i data-lucide="heart-pulse" class="w-5 h-5 theme-primary-text"></i> Pulse
+                </button>
+                <button data-icon-option="cross" class="p-2.5 border border-app rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px] btn-secondary-app">
+                  <i data-lucide="cross" class="w-5 h-5 theme-primary-text"></i> Cross
+                </button>
+                <button data-icon-option="shield-plus" class="p-2.5 border border-app rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px] btn-secondary-app">
+                  <i data-lucide="shield-plus" class="w-5 h-5 theme-primary-text"></i> Shield
+                </button>
+                <button data-icon-option="building-2" class="p-2.5 border border-app rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px] btn-secondary-app">
+                  <i data-lucide="building-2" class="w-5 h-5 theme-primary-text"></i> Hospital
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- DOCTOR ACCOUNTS TABLE WITH EDIT PRIVILEGES -->
-          <div class="md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+          <!-- DOCTOR ACCOUNTS TABLE -->
+          <div class="lg:col-span-2 card-app rounded-2xl shadow-sm border border-app p-5 space-y-4">
             <div class="flex justify-between items-center">
-              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 theme-primary-text"></i> Doctor Accounts Management</h3>
-              <span id="admin-doctor-count" class="text-[10px] bg-slate-100 px-2.5 py-1 rounded-full font-bold">0 Accounts</span>
+              <h3 class="font-bold text-app text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 theme-primary-text"></i> Doctor Accounts Management</h3>
+              <span id="admin-doctor-count" class="text-[10px] card-sub-app px-2.5 py-1 rounded-full font-bold">0 Accounts</span>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 border-b uppercase font-bold text-[10px] text-slate-500">
+              <table class="w-full text-left text-xs min-w-[600px]">
+                <thead class="table-header-app border-b border-app uppercase font-bold text-[10px] text-muted">
                   <tr>
                     <th class="p-3">Doctor Name</th>
                     <th class="p-3">Email</th>
                     <th class="p-3">Specialty</th>
-                    <th class="p-3">Phone</th>
-                    <th class="p-3">Clinic Location</th>
                     <th class="p-3">Role</th>
                     <th class="p-3">Status</th>
                     <th class="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="admin-doctors-list" class="divide-y divide-slate-100"></tbody>
+                <tbody id="admin-doctors-list" class="divide-y divide-app"></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- GLOBAL DEFAULT CATALOGS EDITOR (ADMIN ONLY) -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-          <div class="flex justify-between items-center border-b pb-3">
+        <!-- GLOBAL LAB TESTS MANAGER (WITH NORMAL RANGES & UNITS) -->
+        <div class="card-app rounded-2xl shadow-sm border border-app p-6 space-y-4">
+          <div class="flex justify-between items-center border-b border-app pb-3">
             <div>
-              <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 theme-primary-text"></i> Global Default Master Catalogs Manager</h3>
-              <p class="text-xs text-slate-500">Add or edit global starter options (Diseases, Surgeries, Medications, Labs, Allergies) visible to all doctor accounts.</p>
+              <h3 class="font-bold text-app text-base flex items-center gap-2"><i data-lucide="flask-conical" class="w-5 h-5 theme-primary-text"></i> Global Master Lab Tests Manager</h3>
+              <p class="text-xs text-muted">Add, edit, or delete global lab parameters and normal ranges. Changes take effect across all doctors' accounts.</p>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-2">
+          <!-- ADD NEW GLOBAL LAB FORM -->
+          <form id="f-admin-add-lab" class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-500/5 p-3 rounded-xl border border-app">
+            <input type="text" id="admin-lab-name" placeholder="Lab Test Name (e.g. Hemoglobin)" required class="input-app px-3 py-2 rounded-xl text-xs">
+            <input type="text" id="admin-lab-range" placeholder="Normal Range (e.g. 13.5 - 17.5)" class="input-app px-3 py-2 rounded-xl text-xs">
+            <input type="text" id="admin-lab-unit" placeholder="Unit (e.g. g/dL)" class="input-app px-3 py-2 rounded-xl text-xs">
+            <button type="submit" class="theme-primary-bg text-white font-bold text-xs py-2 px-4 rounded-xl shadow-sm">+ Add Global Lab</button>
+          </form>
+
+          <!-- GLOBAL LABS TABLE -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs min-w-[500px]">
+              <thead class="table-header-app border-b border-app text-[10px] font-bold uppercase text-muted">
+                <tr>
+                  <th class="p-3">Lab Name</th>
+                  <th class="p-3">Default Normal Range</th>
+                  <th class="p-3">Unit</th>
+                  <th class="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-global-labs-list" class="divide-y divide-app"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- OTHER GLOBAL CATALOGS EDITOR -->
+        <div class="card-app rounded-2xl shadow-sm border border-app p-6 space-y-4">
+          <h3 class="font-bold text-app text-base flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 theme-primary-text"></i> Global Default Starter Catalogs</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
             <!-- Global Diseases -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Diseases</h4>
+            <div class="space-y-2 border border-app rounded-xl p-3 card-sub-app">
+              <h4 class="font-bold text-xs text-app">Global Diseases</h4>
               <div class="flex gap-1">
-                <input type="text" id="admin-add-disease" placeholder="New disease..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_diseases', 'admin-add-disease')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
+                <input type="text" id="admin-add-disease" placeholder="New disease..." class="input-app w-full px-2 py-1 rounded-lg text-xs">
+                <button onclick="adminAddGlobalMaster('master_diseases', 'admin-add-disease')" class="theme-primary-bg text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
               </div>
-              <div id="admin-list-diseases" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
+              <div id="admin-list-diseases" class="max-h-36 overflow-y-auto space-y-1 pt-1"></div>
             </div>
 
             <!-- Global Surgeries -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Surgeries</h4>
+            <div class="space-y-2 border border-app rounded-xl p-3 card-sub-app">
+              <h4 class="font-bold text-xs text-app">Global Surgeries</h4>
               <div class="flex gap-1">
-                <input type="text" id="admin-add-surgery" placeholder="New surgery..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_surgeries', 'admin-add-surgery')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
+                <input type="text" id="admin-add-surgery" placeholder="New surgery..." class="input-app w-full px-2 py-1 rounded-lg text-xs">
+                <button onclick="adminAddGlobalMaster('master_surgeries', 'admin-add-surgery')" class="theme-primary-bg text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
               </div>
-              <div id="admin-list-surgeries" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
+              <div id="admin-list-surgeries" class="max-h-36 overflow-y-auto space-y-1 pt-1"></div>
             </div>
 
             <!-- Global Medications -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Medications</h4>
+            <div class="space-y-2 border border-app rounded-xl p-3 card-sub-app">
+              <h4 class="font-bold text-xs text-app">Global Medications</h4>
               <div class="flex gap-1">
-                <input type="text" id="admin-add-med" placeholder="New medication..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_medications', 'admin-add-med')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
+                <input type="text" id="admin-add-med" placeholder="New medication..." class="input-app w-full px-2 py-1 rounded-lg text-xs">
+                <button onclick="adminAddGlobalMaster('master_medications', 'admin-add-med')" class="theme-primary-bg text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
               </div>
-              <div id="admin-list-meds" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
-            </div>
-
-            <!-- Global Labs -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Labs</h4>
-              <div class="flex gap-1">
-                <input type="text" id="admin-add-lab" placeholder="New lab test..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_labs', 'admin-add-lab')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
-              </div>
-              <div id="admin-list-labs" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
+              <div id="admin-list-meds" class="max-h-36 overflow-y-auto space-y-1 pt-1"></div>
             </div>
 
             <!-- Global Allergies -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Allergies</h4>
+            <div class="space-y-2 border border-app rounded-xl p-3 card-sub-app">
+              <h4 class="font-bold text-xs text-app">Global Allergies</h4>
               <div class="flex gap-1">
-                <input type="text" id="admin-add-allergy" placeholder="New allergy..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_allergies', 'admin-add-allergy')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
+                <input type="text" id="admin-add-allergy" placeholder="New allergy..." class="input-app w-full px-2 py-1 rounded-lg text-xs">
+                <button onclick="adminAddGlobalMaster('master_allergies', 'admin-add-allergy')" class="theme-primary-bg text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
               </div>
-              <div id="admin-list-allergies" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
+              <div id="admin-list-allergies" class="max-h-36 overflow-y-auto space-y-1 pt-1"></div>
             </div>
           </div>
         </div>
@@ -465,8 +501,8 @@
   </div>
 
   <!-- MODAL BACKDROP -->
-  <div id="modal-backdrop" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
-    <div id="modal-box" class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 modal-card border border-slate-100"></div>
+  <div id="modal-backdrop" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 modal-overlay">
+    <div id="modal-box" class="card-app rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4 modal-card border border-app"></div>
   </div>
 
   <!-- PRINTABLE VISIT SUMMARY TEMPLATE -->
@@ -492,10 +528,10 @@
     </div>
   </div>
 
-  <!-- JS SCRIPT -->
+  <!-- JS APPLICATION LOGIC -->
   <script>
-    const SUPABASE_URL = "https://gzwpgolzsrdvfvjrssvt.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6d3Bnb2x6c3JkdmZ2anJzc3Z0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MjY4NTYsImV4cCI6MjEwMjIwMjg1Nn0.-0cAcTt2oGg_8VLGlSs50wHd9zIF5R7qdAAzMhXPiIY";
+    const SUPABASE_URL = "https://uhtqrtbfsevofvwylarh.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodHFydGJmc2V2b2Z2d3lsYXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzY1NTMsImV4cCI6MjEwMjIxMjU1M30.kC9wJ_JZBg-aDlNo9AewAQhfmFSYLe_RRzXHGsLY92M";
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -508,12 +544,37 @@
     let searchDebounceTimer = null;
 
     const THEMES = {
-      blue:    { name: 'Royal Blue', color: '#2563eb' },
-      emerald: { name: 'Emerald Green', color: '#059669' },
-      purple:  { name: 'Purple Violet', color: '#7c3aed' },
-      rose:    { name: 'Rose Red', color: '#e11d48' },
-      slate:   { name: 'Slate Dark', color: '#334155' }
+      light:   { name: 'Light Clean', color: '#ffffff', border: '#e2e8f0' },
+      dark:    { name: 'Dark Mode', color: '#0f172a', border: '#334155' },
+      blue:    { name: 'Royal Blue', color: '#2563eb', border: '#bfdbfe' },
+      emerald: { name: 'Emerald Green', color: '#059669', border: '#a7f3d0' },
+      purple:  { name: 'Purple Violet', color: '#7c3aed', border: '#ddd6fe' },
+      rose:    { name: 'Rose Red', color: '#e11d48', border: '#fecdd3' },
+      slate:   { name: 'Slate Gray', color: '#334155', border: '#cbd5e1' }
     };
+
+    // DATE FORMATTER: ALWAYS RENDERS DD/MM/YYYY
+    function formatDateDisplay(dateStr) {
+      if (!dateStr) return '--';
+      const cleanStr = String(dateStr).trim();
+      if (!cleanStr) return '--';
+
+      const parts = cleanStr.split('T')[0].split('-');
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        if (year.length === 4) {
+          return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        }
+      }
+
+      const d = new Date(cleanStr);
+      if (isNaN(d.getTime())) return cleanStr;
+
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
 
     function escapeHTML(str) {
       if (str === null || str === undefined) return '';
@@ -525,7 +586,7 @@
       if (!url) return '#';
       try {
         const parsed = new URL(url);
-        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '#';
+        return ['http:', 'https:', 'data:'].includes(parsed.protocol) ? parsed.href : '#';
       } catch {
         return '#';
       }
@@ -535,12 +596,22 @@
       document.documentElement.setAttribute('data-theme', themeKey || 'blue');
     }
 
-    async function setAppIcon(iconName) {
-      const authIcon = document.getElementById('auth-app-icon');
-      const headerIcon = document.getElementById('header-app-icon');
-      if (authIcon) authIcon.setAttribute('data-lucide', iconName);
-      if (headerIcon) headerIcon.setAttribute('data-lucide', iconName);
-      lucide.createIcons();
+    function updateBrandingDisplay(appLogoSetting) {
+      const authContainer = document.getElementById('auth-logo-container');
+      const headerContainer = document.getElementById('header-logo-container');
+
+      if (!appLogoSetting) return;
+
+      if (appLogoSetting.startsWith('http') || appLogoSetting.startsWith('data:image')) {
+        const imgHtml = `<img src="${sanitizeUrl(appLogoSetting)}" class="w-8 h-8 object-contain rounded-lg" alt="MediDesk Logo">`;
+        if (authContainer) authContainer.innerHTML = imgHtml;
+        if (headerContainer) headerContainer.innerHTML = imgHtml;
+      } else {
+        const iconHtml = `<i id="header-app-icon" data-lucide="${escapeHTML(appLogoSetting)}" class="w-7 h-7 theme-primary-text"></i>`;
+        if (authContainer) authContainer.innerHTML = `<i id="auth-app-icon" data-lucide="${escapeHTML(appLogoSetting)}" class="w-8 h-8"></i>`;
+        if (headerContainer) headerContainer.innerHTML = iconHtml;
+        lucide.createIcons();
+      }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
@@ -575,8 +646,8 @@
     async function loadAppSettings() {
       const { data } = await supabaseClient.from('app_settings').select('key, value');
       if (data) {
-        const iconSetting = data.find(x => x.key === 'app_icon');
-        if (iconSetting) setAppIcon(iconSetting.value);
+        const logoSetting = data.find(x => x.key === 'app_logo');
+        if (logoSetting) updateBrandingDisplay(logoSetting.value);
       }
     }
 
@@ -601,7 +672,6 @@
       document.getElementById('auth-screen').classList.add('hidden');
       document.getElementById('app-screen').classList.remove('hidden');
       
-      // DISPLAY DOCTOR NAME ON TOP RIGHT
       document.getElementById('user-display').textContent = escapeHTML(currentUserProfile.full_name || user.email);
 
       if (currentUserProfile.is_admin) {
@@ -624,10 +694,9 @@
       document.getElementById('btn-export-excel').addEventListener('click', exportFilteredPatientsExcel);
       document.getElementById('btn-add-patient').addEventListener('click', openNewPatientModal);
       document.getElementById('btn-edit-patient-profile').addEventListener('click', openEditPatientProfileModal);
+      document.getElementById('btn-delete-patient-record').addEventListener('click', deleteCurrentPatientRecord);
       document.getElementById('btn-reset-filters').addEventListener('click', resetFilters);
       document.getElementById('btn-theme-modal').addEventListener('click', openThemeModal);
-      
-      // MY DOCTOR PROFILE BUTTON
       document.getElementById('btn-my-profile').addEventListener('click', openMyProfileModal);
 
       document.getElementById('search-query').addEventListener('input', () => {
@@ -655,6 +724,9 @@
 
       document.getElementById('btn-admin-panel').addEventListener('click', openAdminPanel);
       document.getElementById('btn-admin-close').addEventListener('click', () => showSection('directory'));
+
+      document.getElementById('btn-save-custom-logo').addEventListener('click', uploadCustomLogo);
+      document.getElementById('f-admin-add-lab').addEventListener('submit', handleAdminAddGlobalLab);
     }
 
     function bindDelegatedEventListeners() {
@@ -692,41 +764,184 @@
       });
     }
 
+    // DELETE PATIENT ENTIRE RECORD
+    async function deleteCurrentPatientRecord() {
+      if (!currentPatient) return;
+      
+      const confirmFirst = confirm(`Are you sure you want to COMPLETELY delete patient "${currentPatient.full_name}"?`);
+      if (!confirmFirst) return;
+
+      const confirmSecond = confirm(`WARNING: This will permanently erase all medical history, visits, lab results, and records for ${currentPatient.full_name}. Proceed?`);
+      if (!confirmSecond) return;
+
+      const { error } = await supabaseClient.from('patients').delete().eq('id', currentPatient.id);
+      if (error) {
+        return alert("Failed to delete patient record: " + escapeHTML(error.message));
+      }
+
+      alert("Patient record deleted successfully.");
+      currentPatient = null;
+      showSection('directory');
+      await fetchPatients();
+    }
+
+    // MASTER LABS MANAGEMENT (ADMIN & DOCTOR "OTHERS")
+    async function handleAdminAddGlobalLab(e) {
+      e.preventDefault();
+      const name = document.getElementById('admin-lab-name').value.trim();
+      const range = document.getElementById('admin-lab-range').value.trim();
+      const unit = document.getElementById('admin-lab-unit').value.trim();
+
+      if (!name) return;
+
+      const { error } = await supabaseClient.from('master_labs').insert([{
+        name: name,
+        normal_range: range || null,
+        unit: unit || null,
+        doctor_id: null
+      }]);
+
+      if (error) return alert("Failed to add global lab: " + escapeHTML(error.message));
+
+      document.getElementById('admin-lab-name').value = '';
+      document.getElementById('admin-lab-range').value = '';
+      document.getElementById('admin-lab-unit').value = '';
+
+      await renderAdminGlobalLabs();
+      await loadMasterCatalogs();
+    }
+
+    async function renderAdminGlobalLabs() {
+      const { data } = await supabaseClient.from('master_labs').select('*').is('doctor_id', null).order('name');
+      const tbody = document.getElementById('admin-global-labs-list');
+      tbody.innerHTML = (data || []).length === 0 ? `<tr><td colspan="4" class="p-3 text-muted text-center">No global labs configured.</td></tr>` : '';
+
+      (data || []).forEach(lab => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-500/5";
+        tr.innerHTML = `
+          <td class="p-3 font-semibold text-app">${escapeHTML(lab.name)}</td>
+          <td class="p-3 text-muted">${escapeHTML(lab.normal_range || '--')}</td>
+          <td class="p-3 text-muted">${escapeHTML(lab.unit || '--')}</td>
+          <td class="p-3 text-right space-x-1">
+            <button onclick="adminEditGlobalLab('${escapeHTML(lab.id)}', '${escapeHTML(lab.name)}', '${escapeHTML(lab.normal_range || '')}', '${escapeHTML(lab.unit || '')}')" class="text-[10px] bg-slate-500/10 text-app px-2 py-1 rounded-lg font-bold">Edit</button>
+            <button onclick="adminDeleteGlobalLab('${escapeHTML(lab.id)}')" class="text-[10px] bg-red-500/10 text-red-600 px-2 py-1 rounded-lg font-bold">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function adminEditGlobalLab(id, currentName, currentRange, currentUnit) {
+      showModal(`
+        <h3 class="text-base font-bold text-app">Edit Global Lab Test</h3>
+        <form id="f-admin-edit-lab" class="space-y-3 pt-2">
+          <div><label class="block text-[10px] font-bold uppercase text-muted">Lab Name</label><input type="text" id="edit-lab-name" value="${escapeHTML(currentName)}" required class="input-app w-full p-2 rounded-xl text-xs"></div>
+          <div><label class="block text-[10px] font-bold uppercase text-muted">Normal Range</label><input type="text" id="edit-lab-range" value="${escapeHTML(currentRange)}" class="input-app w-full p-2 rounded-xl text-xs"></div>
+          <div><label class="block text-[10px] font-bold uppercase text-muted">Unit</label><input type="text" id="edit-lab-unit" value="${escapeHTML(currentUnit)}" class="input-app w-full p-2 rounded-xl text-xs"></div>
+          <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2 rounded-xl text-xs">Save Updates</button>
+        </form>
+      `);
+
+      document.getElementById('f-admin-edit-lab').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const { error } = await supabaseClient.from('master_labs').update({
+          name: document.getElementById('edit-lab-name').value.trim(),
+          normal_range: document.getElementById('edit-lab-range').value.trim() || null,
+          unit: document.getElementById('edit-lab-unit').value.trim() || null
+        }).eq('id', id);
+
+        if (error) return alert("Failed to update lab: " + escapeHTML(error.message));
+        closeModal();
+        await renderAdminGlobalLabs();
+        await loadMasterCatalogs();
+      });
+    }
+
+    async function adminDeleteGlobalLab(id) {
+      if (!confirm("Delete this global lab test default?")) return;
+      await supabaseClient.from('master_labs').delete().eq('id', id);
+      await renderAdminGlobalLabs();
+      await loadMasterCatalogs();
+    }
+
+    // BRANDING & LOGO UPLOAD LOGIC
+    async function uploadCustomLogo() {
+      if (!currentUserProfile.is_admin) return;
+
+      const fileInput = document.getElementById('admin-logo-file');
+      const urlInput = document.getElementById('admin-logo-url');
+      let finalLogoValue = '';
+
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          finalLogoValue = e.target.result;
+          await saveLogoToDatabase(finalLogoValue);
+        };
+        reader.readAsDataURL(file);
+      } else if (urlInput.value.trim()) {
+        finalLogoValue = urlInput.value.trim();
+        await saveLogoToDatabase(finalLogoValue);
+      } else {
+        alert("Please select an image file or enter an Image URL.");
+      }
+    }
+
+    async function saveLogoToDatabase(logoValue) {
+      const { error } = await supabaseClient
+        .from('app_settings')
+        .upsert({ key: 'app_logo', value: logoValue, updated_at: new Date().toISOString() });
+
+      if (error) {
+        alert("Failed to save custom logo: " + escapeHTML(error.message));
+      } else {
+        updateBrandingDisplay(logoValue);
+        alert("Custom logo applied successfully!");
+      }
+    }
+
+    async function updateAppIcon(iconName) {
+      if (!currentUserProfile.is_admin) return;
+      await saveLogoToDatabase(iconName);
+    }
+
     // DOCTOR PROFILE EDIT MODAL
     function openMyProfileModal() {
       const p = currentUserProfile;
       showModal(`
         <div class="space-y-4">
-          <div class="border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">My Doctor Profile</h3>
-            <p class="text-xs text-slate-500">View and update your personal and clinic information. All fields are optional.</p>
+          <div class="border-b border-app pb-2">
+            <h3 class="text-base font-bold text-app">My Doctor Profile</h3>
+            <p class="text-xs text-muted">View and update your personal and clinic information.</p>
           </div>
           
           <form id="f-doctor-profile" class="space-y-3">
             <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label>
-              <input type="text" id="doc-p-name" value="${escapeHTML(p.full_name || '')}" placeholder="e.g. Dr. Jane Smith" class="w-full border p-2.5 rounded-xl text-xs font-semibold">
+              <label class="block text-[10px] font-bold uppercase text-muted">Full Name</label>
+              <input type="text" id="doc-p-name" value="${escapeHTML(p.full_name || '')}" placeholder="e.g. Dr. Jane Smith" class="input-app w-full p-2.5 rounded-xl text-xs font-semibold">
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Specialty</label>
-                <input type="text" id="doc-p-spec" value="${escapeHTML(p.specialty || '')}" placeholder="e.g. Internal Medicine / Cardiology" class="w-full border p-2.5 rounded-xl text-xs">
+                <label class="block text-[10px] font-bold uppercase text-muted">Specialty</label>
+                <input type="text" id="doc-p-spec" value="${escapeHTML(p.specialty || '')}" placeholder="e.g. Internal Medicine" class="input-app w-full p-2.5 rounded-xl text-xs">
               </div>
               <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Phone Number(s)</label>
-                <input type="text" id="doc-p-phone" value="${escapeHTML(p.phone_number || '')}" placeholder="e.g. +123 456 7890" class="w-full border p-2.5 rounded-xl text-xs">
+                <label class="block text-[10px] font-bold uppercase text-muted">Phone Number(s)</label>
+                <input type="text" id="doc-p-phone" value="${escapeHTML(p.phone_number || '')}" placeholder="e.g. +123 456 7890" class="input-app w-full p-2.5 rounded-xl text-xs">
               </div>
             </div>
 
             <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Clinic Location(s)</label>
-              <input type="text" id="doc-p-loc" value="${escapeHTML(p.clinic_location || '')}" placeholder="e.g. Building B, 3rd Floor, Medical Center" class="w-full border p-2.5 rounded-xl text-xs">
+              <label class="block text-[10px] font-bold uppercase text-muted">Clinic Location(s)</label>
+              <input type="text" id="doc-p-loc" value="${escapeHTML(p.clinic_location || '')}" placeholder="e.g. Medical Center, Floor 3" class="input-app w-full p-2.5 rounded-xl text-xs">
             </div>
 
             <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Email Address</label>
-              <input type="email" value="${escapeHTML(currentUser.email)}" disabled class="w-full border p-2.5 rounded-xl text-xs bg-slate-100 text-slate-500 font-mono">
+              <label class="block text-[10px] font-bold uppercase text-muted">Email Address</label>
+              <input type="email" value="${escapeHTML(currentUser.email)}" disabled class="input-app w-full p-2.5 rounded-xl text-xs opacity-60 font-mono">
             </div>
 
             <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">Save Profile Updates</button>
@@ -763,74 +978,16 @@
       });
     }
 
-    // ADMIN EDIT ANY DOCTOR'S PROFILE
-    async function openAdminEditDoctorModal(doctorId) {
-      const { data: doc } = await supabaseClient.from('doctor_profiles').select('*').eq('id', doctorId).single();
-      if (!doc) return alert("Doctor record not found.");
-
-      showModal(`
-        <div class="space-y-4">
-          <div class="border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">Admin - Edit Doctor Profile</h3>
-            <p class="text-xs text-slate-500">Updating profile info for ${escapeHTML(doc.email)}</p>
-          </div>
-          
-          <form id="f-admin-edit-doc" class="space-y-3">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label>
-              <input type="text" id="admin-doc-name" value="${escapeHTML(doc.full_name || '')}" class="w-full border p-2.5 rounded-xl text-xs font-semibold">
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Specialty</label>
-                <input type="text" id="admin-doc-spec" value="${escapeHTML(doc.specialty || '')}" class="w-full border p-2.5 rounded-xl text-xs">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Phone Number(s)</label>
-                <input type="text" id="admin-doc-phone" value="${escapeHTML(doc.phone_number || '')}" class="w-full border p-2.5 rounded-xl text-xs">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Clinic Location(s)</label>
-              <input type="text" id="admin-doc-loc" value="${escapeHTML(doc.clinic_location || '')}" class="w-full border p-2.5 rounded-xl text-xs">
-            </div>
-
-            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 py-2.5 rounded-xl text-xs font-bold shadow-sm">Update Doctor Profile</button>
-          </form>
-        </div>
-      `);
-
-      document.getElementById('f-admin-edit-doc').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const { error } = await supabaseClient
-          .from('doctor_profiles')
-          .update({
-            full_name: document.getElementById('admin-doc-name').value.trim(),
-            specialty: document.getElementById('admin-doc-spec').value.trim(),
-            phone_number: document.getElementById('admin-doc-phone').value.trim(),
-            clinic_location: document.getElementById('admin-doc-loc').value.trim()
-          })
-          .eq('id', doctorId);
-
-        if (error) return alert("Update failed: " + escapeHTML(error.message));
-
-        closeModal();
-        await loadAdminDoctorsList();
-      });
-    }
-
     function openThemeModal() {
       const html = `
-        <h3 class="text-lg font-bold text-slate-900">Customize Layout Theme</h3>
-        <p class="text-xs text-slate-500">Select your preferred accent color scheme. Saved automatically.</p>
+        <h3 class="text-lg font-bold text-app">Customize App Theme</h3>
+        <p class="text-xs text-muted">Select your preferred color scheme and layout mode. Changes apply immediately across the app.</p>
         
-        <div class="grid grid-cols-1 gap-2 pt-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-3">
           ${Object.keys(THEMES).map(key => `
-            <button onclick="saveUserTheme('${key}')" class="p-3 rounded-xl border text-left flex items-center justify-between hover:border-slate-400">
-              <span class="text-xs font-semibold text-slate-800">${THEMES[key].name}</span>
-              <span class="w-5 h-5 rounded-full" style="background-color: ${THEMES[key].color}"></span>
+            <button onclick="saveUserTheme('${key}')" class="p-3 rounded-xl border border-app text-left flex items-center justify-between card-sub-app hover:border-slate-400 transition">
+              <span class="text-xs font-semibold text-app">${THEMES[key].name}</span>
+              <span class="w-5 h-5 rounded-full border border-slate-300" style="background-color: ${THEMES[key].color}"></span>
             </button>
           `).join('')}
         </div>
@@ -850,25 +1007,13 @@
       closeModal();
     }
 
-    // ADMIN DASHBOARD & MASTER CATALOG MANAGERS
+    // ADMIN DASHBOARD
     async function openAdminPanel() {
       if (!currentUserProfile.is_admin) return;
       showSection('admin');
       await loadAdminDoctorsList();
+      await renderAdminGlobalLabs();
       await renderAdminGlobalMasterLists();
-    }
-
-    async function updateAppIcon(iconName) {
-      if (!currentUserProfile.is_admin) return;
-
-      const { error } = await supabaseClient
-        .from('app_settings')
-        .upsert({ key: 'app_icon', value: iconName, updated_at: new Date().toISOString() });
-
-      if (!error) {
-        await setAppIcon(iconName);
-        alert(`App icon updated to "${iconName}" globally!`);
-      }
     }
 
     async function loadAdminDoctorsList() {
@@ -879,18 +1024,16 @@
 
       (doctors || []).forEach(doc => {
         const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-500/5";
         tr.innerHTML = `
-          <td class="p-3 font-semibold text-slate-800">${escapeHTML(doc.full_name || 'N/A')}</td>
-          <td class="p-3 text-slate-500">${escapeHTML(doc.email)}</td>
-          <td class="p-3 text-slate-600">${escapeHTML(doc.specialty || '--')}</td>
-          <td class="p-3 text-slate-600">${escapeHTML(doc.phone_number || '--')}</td>
-          <td class="p-3 text-slate-600">${escapeHTML(doc.clinic_location || '--')}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${doc.is_admin ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${doc.is_admin ? 'ADMIN' : 'DOCTOR'}</span></td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${doc.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${doc.is_active ? 'ACTIVE' : 'SUSPENDED'}</span></td>
+          <td class="p-3 font-semibold text-app">${escapeHTML(doc.full_name || 'N/A')}</td>
+          <td class="p-3 text-muted">${escapeHTML(doc.email)}</td>
+          <td class="p-3 text-muted">${escapeHTML(doc.specialty || '--')}</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${doc.is_admin ? 'bg-amber-500/20 text-amber-600' : 'card-sub-app text-muted'}">${doc.is_admin ? 'ADMIN' : 'DOCTOR'}</span></td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${doc.is_active ? 'bg-emerald-500/20 text-emerald-600' : 'bg-red-500/20 text-red-600'}">${doc.is_active ? 'ACTIVE' : 'SUSPENDED'}</span></td>
           <td class="p-3 text-right space-x-1">
-            <button onclick="openAdminEditDoctorModal('${escapeHTML(doc.id)}')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-2 py-1 rounded-lg">Edit Profile</button>
             ${doc.id === currentUser.id ? '' : `
-              <button onclick="toggleDoctorStatus('${escapeHTML(doc.id)}', ${!doc.is_active})" class="text-[10px] font-bold px-2 py-1 rounded-lg ${doc.is_active ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}">
+              <button onclick="toggleDoctorStatus('${escapeHTML(doc.id)}', ${!doc.is_active})" class="text-[10px] font-bold px-2 py-1 rounded-lg ${doc.is_active ? 'bg-red-500/10 text-red-600' : 'bg-emerald-500/10 text-emerald-600'}">
                 ${doc.is_active ? 'Suspend' : 'Activate'}
               </button>
             `}
@@ -910,7 +1053,6 @@
         { table: 'master_diseases', containerId: 'admin-list-diseases' },
         { table: 'master_surgeries', containerId: 'admin-list-surgeries' },
         { table: 'master_medications', containerId: 'admin-list-meds' },
-        { table: 'master_labs', containerId: 'admin-list-labs' },
         { table: 'master_allergies', containerId: 'admin-list-allergies' }
       ];
 
@@ -918,14 +1060,14 @@
         const { data } = await supabaseClient.from(cat.table).select('*').is('doctor_id', null).order('name');
         const container = document.getElementById(cat.containerId);
         if (!container) continue;
-        container.innerHTML = (data || []).length === 0 ? `<p class="text-[10px] text-slate-400">No global defaults.</p>` : '';
+        container.innerHTML = (data || []).length === 0 ? `<p class="text-[10px] text-muted">No global defaults.</p>` : '';
 
         (data || []).forEach(item => {
           const div = document.createElement('div');
-          div.className = "flex justify-between items-center text-[11px] bg-white p-1.5 border rounded-lg";
+          div.className = "flex justify-between items-center text-[11px] card-app p-1.5 border border-app rounded-lg";
           div.innerHTML = `
-            <span class="truncate font-medium text-slate-700">${escapeHTML(item.name)}</span>
-            <button onclick="adminDeleteGlobalMaster('${cat.table}', '${item.id}')" class="text-red-500 hover:text-red-700 font-bold ml-1">✕</button>
+            <span class="truncate font-medium text-app">${escapeHTML(item.name)}</span>
+            <button onclick="adminDeleteGlobalMaster('${cat.table}', '${item.id}')" class="text-red-500 font-bold ml-1">✕</button>
           `;
           container.appendChild(div);
         });
@@ -938,20 +1080,15 @@
       if (!val) return;
 
       const { error } = await supabaseClient.from(tableName).insert([{ name: val, doctor_id: null }]);
-      if (error) {
-        return alert("Error adding global master item: " + escapeHTML(error.message));
-      }
+      if (error) return alert("Error adding item: " + escapeHTML(error.message));
       input.value = '';
       await renderAdminGlobalMasterLists();
       await loadMasterCatalogs();
     }
 
     async function adminDeleteGlobalMaster(tableName, itemId) {
-      if (!confirm("Delete this global default item?")) return;
-      const { error } = await supabaseClient.from(tableName).delete().eq('id', itemId);
-      if (error) {
-        return alert("Error deleting global master item: " + escapeHTML(error.message));
-      }
+      if (!confirm("Delete global default item?")) return;
+      await supabaseClient.from(tableName).delete().eq('id', itemId);
       await renderAdminGlobalMasterLists();
       await loadMasterCatalogs();
     }
@@ -1061,7 +1198,7 @@
       tbody.innerHTML = '';
 
       if (patients.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No matching patient records found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-muted">No matching patient records found.</td></tr>`;
         return;
       }
 
@@ -1070,16 +1207,16 @@
         const bmi = calculateBMI(p.height_cm, p.weight_kg);
 
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition cursor-pointer";
+        tr.className = "hover:bg-slate-500/5 transition cursor-pointer";
         tr.setAttribute('data-patient-id', escapeHTML(p.id));
         tr.innerHTML = `
-          <td class="p-4 font-bold theme-primary-text">${escapeHTML(p.full_name)}</td>
-          <td class="p-4 font-mono">${escapeHTML(p.national_id)}</td>
-          <td class="p-4">${escapeHTML(p.phone || '--')}</td>
-          <td class="p-4">${escapeHTML(p.dob)} (${age} yrs)</td>
-          <td class="p-4">${escapeHTML(p.gender || 'Unspecified')}</td>
-          <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${getBMIBadgeClass(bmi.val)}">${bmi.val ? escapeHTML(bmi.val + ' (' + bmi.cat + ')') : '--'}</span></td>
-          <td class="p-4 text-right">
+          <td class="p-3 sm:p-4 font-bold theme-primary-text">${escapeHTML(p.full_name)}</td>
+          <td class="p-3 sm:p-4 font-mono">${escapeHTML(p.national_id)}</td>
+          <td class="p-3 sm:p-4">${escapeHTML(p.phone || '--')}</td>
+          <td class="p-3 sm:p-4 font-medium">${formatDateDisplay(p.dob)} (${age} yrs)</td>
+          <td class="p-3 sm:p-4">${escapeHTML(p.gender || 'Unspecified')}</td>
+          <td class="p-3 sm:p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${getBMIBadgeClass(bmi.val)}">${bmi.val ? escapeHTML(bmi.val + ' (' + bmi.cat + ')') : '--'}</span></td>
+          <td class="p-3 sm:p-4 text-right">
             <button class="theme-light-bg theme-primary-text px-3 py-1 rounded-lg text-xs font-semibold">View Profile</button>
           </td>
         `;
@@ -1110,7 +1247,7 @@
       document.getElementById('p-name').textContent = escapeHTML(p.full_name);
       document.getElementById('p-gender-badge').textContent = escapeHTML(p.gender || 'Unspecified');
       document.getElementById('p-id').textContent = escapeHTML(p.national_id);
-      document.getElementById('p-dob').textContent = escapeHTML(p.dob);
+      document.getElementById('p-dob').textContent = formatDateDisplay(p.dob);
       document.getElementById('p-age').textContent = calculateAge(p.dob);
       document.getElementById('p-phone').textContent = escapeHTML(p.phone || '--');
       document.getElementById('p-height-weight').textContent = `${escapeHTML(p.height_cm) || '--'} cm / ${escapeHTML(p.weight_kg) || '--'} kg`;
@@ -1151,7 +1288,7 @@
     function renderAllergiesBanner(allergies) {
       const textElem = document.getElementById('allergy-list-text');
       if (allergies.length === 0) {
-        textElem.textContent = "No Known Drug Allergies Recorded";
+        textElem.textContent = "None Recorded";
         return;
       }
       textElem.textContent = allergies.map(a => `${escapeHTML(a.allergy_name)} (${escapeHTML(a.reaction_notes || 'Unspecified')})`).join(' • ');
@@ -1159,13 +1296,13 @@
 
     function renderPMH(pmhList) {
       const container = document.getElementById('pmh-list');
-      container.innerHTML = pmhList.length === 0 ? `<p class="text-xs text-slate-400">No medical conditions recorded.</p>` : '';
+      container.innerHTML = pmhList.length === 0 ? `<p class="text-xs text-muted">No medical conditions recorded.</p>` : '';
 
       pmhList.forEach(item => {
         const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-3 rounded-xl flex justify-between items-center text-xs";
+        div.className = "card-sub-app border border-app p-3 rounded-xl flex justify-between items-center text-xs";
         div.innerHTML = `
-          <div><strong class="font-bold text-slate-800">${escapeHTML(item.disease_name)}</strong><span class="block text-[10px] text-slate-500">Onset: ${item.onset_year}</span></div>
+          <div><strong class="font-bold text-app">${escapeHTML(item.disease_name)}</strong><span class="block text-[10px] text-muted">Onset Year: ${item.onset_year}</span></div>
           <button data-action="delete-sub" data-table="patient_pmh" data-record-id="${escapeHTML(item.id)}" class="text-[10px] text-red-500 hover:underline font-semibold">Delete</button>
         `;
         container.appendChild(div);
@@ -1174,13 +1311,13 @@
 
     function renderPSH(pshList) {
       const container = document.getElementById('psh-list');
-      container.innerHTML = pshList.length === 0 ? `<p class="text-xs text-slate-400">No surgical history recorded.</p>` : '';
+      container.innerHTML = pshList.length === 0 ? `<p class="text-xs text-muted">No surgical history recorded.</p>` : '';
 
       pshList.forEach(item => {
         const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-3 rounded-xl flex justify-between items-center text-xs";
+        div.className = "card-sub-app border border-app p-3 rounded-xl flex justify-between items-center text-xs";
         div.innerHTML = `
-          <div><strong class="font-bold text-slate-800">${escapeHTML(item.surgery_name)}</strong><span class="block text-[10px] text-slate-500">Year: ${item.surgery_year}</span></div>
+          <div><strong class="font-bold text-app">${escapeHTML(item.surgery_name)}</strong><span class="block text-[10px] text-muted">Year: ${item.surgery_year}</span></div>
           <button data-action="delete-sub" data-table="patient_psh" data-record-id="${escapeHTML(item.id)}" class="text-[10px] text-red-500 hover:underline font-semibold">Delete</button>
         `;
         container.appendChild(div);
@@ -1189,15 +1326,15 @@
 
     function renderMeds(medsList) {
       const tbody = document.getElementById('meds-list');
-      tbody.innerHTML = medsList.length === 0 ? `<tr><td colspan="5" class="p-4 text-xs text-slate-400">No active medications.</td></tr>` : '';
+      tbody.innerHTML = medsList.length === 0 ? `<tr><td colspan="5" class="p-4 text-xs text-muted">No active medications.</td></tr>` : '';
 
       medsList.forEach(m => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-3 font-semibold text-slate-800">${escapeHTML(m.medication_name)}</td>
-          <td class="p-3">${escapeHTML(m.dose)}</td>
-          <td class="p-3">${escapeHTML(m.frequency)}</td>
-          <td class="p-3">${escapeHTML(m.route)}</td>
+          <td class="p-3 font-semibold text-app">${escapeHTML(m.medication_name)}</td>
+          <td class="p-3 text-muted">${escapeHTML(m.dose)}</td>
+          <td class="p-3 text-muted">${escapeHTML(m.frequency)}</td>
+          <td class="p-3 text-muted">${escapeHTML(m.route)}</td>
           <td class="p-3 text-right"><button data-action="delete-sub" data-table="patient_medications" data-record-id="${escapeHTML(m.id)}" class="text-xs text-red-500 hover:underline font-semibold">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1206,16 +1343,16 @@
 
     function renderLabsTable(labsList) {
       const tbody = document.getElementById('labs-list');
-      tbody.innerHTML = labsList.length === 0 ? `<tr><td colspan="6" class="p-4 text-xs text-slate-400">No laboratory results found.</td></tr>` : '';
+      tbody.innerHTML = labsList.length === 0 ? `<tr><td colspan="6" class="p-4 text-xs text-muted">No laboratory results found.</td></tr>` : '';
 
       labsList.forEach(l => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td class="p-3 text-slate-500">${escapeHTML(l.test_date)}</td>
-          <td class="p-3 font-semibold text-slate-800">${escapeHTML(l.lab_name)}</td>
+          <td class="p-3 font-medium text-app">${formatDateDisplay(l.test_date)}</td>
+          <td class="p-3 font-semibold text-app">${escapeHTML(l.lab_name)}</td>
           <td class="p-3 font-bold theme-primary-text">${escapeHTML(l.result_value)} ${escapeHTML(l.unit || '')}</td>
-          <td class="p-3 text-slate-500">${escapeHTML(l.normal_range || '--')}</td>
-          <td class="p-3 text-slate-400">${escapeHTML(l.source || 'Manual')}</td>
+          <td class="p-3 text-muted">${escapeHTML(l.normal_range || '--')}</td>
+          <td class="p-3 text-muted">${escapeHTML(l.source || 'Manual')}</td>
           <td class="p-3 text-right"><button data-action="delete-sub" data-table="patient_labs" data-record-id="${escapeHTML(l.id)}" class="text-xs text-red-500 hover:underline font-semibold">Delete</button></td>
         `;
         tbody.appendChild(tr);
@@ -1226,7 +1363,7 @@
       const q = document.getElementById('lab-search-input').value.toLowerCase().trim();
       const filtered = currentPatientLabsData.filter(l => 
         l.lab_name.toLowerCase().includes(q) ||
-        l.test_date.includes(q) ||
+        formatDateDisplay(l.test_date).includes(q) ||
         String(l.result_value).includes(q)
       );
       renderLabsTable(filtered);
@@ -1265,12 +1402,12 @@
       activeLabChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: filtered.map(l => escapeHTML(l.test_date)),
+          labels: filtered.map(l => formatDateDisplay(l.test_date)),
           datasets: [{
             label: `${selectedLab} (${filtered[0]?.unit || ''})`,
             data: filtered.map(l => l.result_value),
             borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            backgroundColor: 'rgba(37, 99, 235, 0.15)',
             fill: true,
             tension: 0.3,
             pointRadius: 6,
@@ -1288,26 +1425,25 @@
     // VISITS
     function renderVisits(visitsList) {
       const container = document.getElementById('visits-list');
-      container.innerHTML = visitsList.length === 0 ? `<p class="text-xs text-slate-400">No visits recorded.</p>` : '';
+      container.innerHTML = visitsList.length === 0 ? `<p class="text-xs text-muted">No visits recorded.</p>` : '';
 
       visitsList.forEach(v => {
-        const dateStr = new Date(v.visit_date).toLocaleDateString();
         const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-4 rounded-2xl space-y-2";
+        div.className = "card-sub-app border border-app p-4 rounded-2xl space-y-2";
         div.innerHTML = `
-          <div class="flex justify-between items-center border-b pb-2">
-            <span class="font-bold text-xs text-slate-800">Visit Date: ${escapeHTML(dateStr)}</span>
+          <div class="flex justify-between items-center border-b border-app pb-2">
+            <span class="font-bold text-xs text-app">Visit Date: ${formatDateDisplay(v.visit_date)}</span>
             <div class="flex gap-2">
-              <button data-action="edit-visit" data-visit-id="${escapeHTML(v.id)}" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-800 px-2.5 py-1 rounded-lg font-semibold flex items-center space-x-1">
+              <button data-action="edit-visit" data-visit-id="${escapeHTML(v.id)}" class="btn-secondary-app text-[10px] px-2.5 py-1 rounded-lg font-semibold flex items-center space-x-1">
                 <i data-lucide="edit-3" class="w-3 h-3"></i><span>Edit Note</span>
               </button>
-              <button data-action="export-pdf" data-visit-id="${escapeHTML(v.id)}" class="text-[10px] bg-blue-50 text-blue-600 hover:bg-blue-100 px-2.5 py-1 rounded-lg font-semibold flex items-center space-x-1">
+              <button data-action="export-pdf" data-visit-id="${escapeHTML(v.id)}" class="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 px-2.5 py-1 rounded-lg font-semibold flex items-center space-x-1">
                 <i data-lucide="printer" class="w-3 h-3"></i><span>Export PDF</span>
               </button>
             </div>
           </div>
-          <p class="text-xs text-slate-600"><strong>Chief Complaint:</strong> ${escapeHTML(v.chief_complaint || 'N/A')}</p>
-          <p class="text-xs text-slate-800 whitespace-pre-wrap mt-2 bg-white p-3 rounded-xl border border-slate-200 font-sans leading-relaxed">${escapeHTML(v.clinical_notes)}</p>
+          <p class="text-xs text-muted"><strong>Chief Complaint:</strong> ${escapeHTML(v.chief_complaint || 'N/A')}</p>
+          <p class="text-xs text-app whitespace-pre-wrap mt-2 card-app p-3 rounded-xl border border-app font-sans leading-relaxed">${escapeHTML(v.clinical_notes)}</p>
         `;
         container.appendChild(div);
       });
@@ -1322,7 +1458,7 @@
       activeVitalsChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: vitalsList.map(v => new Date(v.measured_at).toLocaleDateString()),
+          labels: vitalsList.map(v => formatDateDisplay(v.measured_at)),
           datasets: [
             { label: 'Systolic BP', data: vitalsList.map(v => v.bp_systolic), borderColor: '#dc2626' },
             { label: 'Diastolic BP', data: vitalsList.map(v => v.bp_diastolic), borderColor: '#f97316' },
@@ -1335,13 +1471,13 @@
 
     function renderRadiology(radList) {
       const container = document.getElementById('radiology-list');
-      container.innerHTML = radList.length === 0 ? `<p class="text-xs text-slate-400">No radiology records.</p>` : '';
+      container.innerHTML = radList.length === 0 ? `<p class="text-xs text-muted">No radiology records.</p>` : '';
 
       radList.forEach(r => {
         const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-4 rounded-2xl flex justify-between items-center";
+        div.className = "card-sub-app border border-app p-4 rounded-2xl flex justify-between items-center";
         div.innerHTML = `
-          <div><h4 class="font-bold text-slate-800 text-xs">${escapeHTML(r.title)}</h4><p class="text-[10px] text-slate-500">Date: ${escapeHTML(r.exam_date)}</p></div>
+          <div><h4 class="font-bold text-app text-xs">${escapeHTML(r.title)}</h4><p class="text-[10px] text-muted">Exam Date: ${formatDateDisplay(r.exam_date)}</p></div>
           <a href="${sanitizeUrl(r.image_url)}" target="_blank" rel="noopener noreferrer" class="theme-primary-bg text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1"><span>View Image</span><i data-lucide="external-link" class="w-3 h-3"></i></a>
         `;
         container.appendChild(div);
@@ -1352,11 +1488,11 @@
     // AI GEMINI LAB EXTRACTION
     function openGeminiLabModal() {
       showModal(`
-        <h3 class="text-lg font-bold text-slate-900">AI Multimodal Lab Extraction (Gemini)</h3>
-        <p class="text-xs text-slate-500">Upload a lab report image and enter your Gemini API Key.</p>
+        <h3 class="text-lg font-bold text-app">AI Multimodal Lab Extraction (Gemini)</h3>
+        <p class="text-xs text-muted">Upload a lab report image and enter your Gemini API Key.</p>
         <div class="space-y-3 pt-2">
-          <input type="password" id="gemini-key" class="w-full px-3 py-2 border rounded-xl text-xs" placeholder="Gemini API Key (AIzaSy...)">
-          <input type="file" id="gemini-file" accept="image/*" class="w-full text-xs text-slate-500">
+          <input type="password" id="gemini-key" class="input-app w-full px-3 py-2 rounded-xl text-xs" placeholder="Gemini API Key (AIzaSy...)">
+          <input type="file" id="gemini-file" accept="image/*" class="input-app w-full text-xs text-muted">
           <button id="btn-run-gemini" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl text-xs">Extract Labs with AI</button>
         </div>
       `);
@@ -1370,7 +1506,6 @@
           return;
         }
 
-        // Placeholder notice - ready for your Gemini Vision endpoint logic
         alert("API Key and Image loaded. Connecting to Gemini API for lab extraction...");
       });
     }
@@ -1381,12 +1516,12 @@
       const p = currentPatient;
 
       document.getElementById('print-doc').textContent = escapeHTML(currentUserProfile.full_name);
-      document.getElementById('print-date').textContent = "Date: " + escapeHTML(new Date(v.visit_date).toLocaleDateString());
+      document.getElementById('print-date').textContent = "Date: " + formatDateDisplay(v.visit_date);
       document.getElementById('print-patient-info').innerHTML = `
         <p><strong>Patient Name:</strong> ${escapeHTML(p.full_name)}</p>
         <p><strong>ID Number:</strong> ${escapeHTML(p.national_id)}</p>
+        <p><strong>DOB:</strong> ${formatDateDisplay(p.dob)}</p>
         <p><strong>Gender:</strong> ${escapeHTML(p.gender || 'N/A')}</p>
-        <p><strong>Phone:</strong> ${escapeHTML(p.phone || 'N/A')}</p>
       `;
       document.getElementById('print-complaint').textContent = escapeHTML(v.chief_complaint || 'N/A');
       document.getElementById('print-notes').textContent = escapeHTML(v.clinical_notes);
@@ -1410,7 +1545,7 @@
         "Full Name": p.full_name,
         "ID Number": p.national_id,
         "Phone": p.phone || '',
-        "DOB": p.dob,
+        "DOB (DD/MM/YYYY)": formatDateDisplay(p.dob),
         "Gender": p.gender || '',
         "Height (cm)": p.height_cm || '',
         "Weight (kg)": p.weight_kg || '',
@@ -1442,7 +1577,7 @@
 
     function switchTab(tabId, targetBtn) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active', 'text-slate-500'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active', 'text-muted'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
       targetBtn.classList.add('tab-active');
 
@@ -1452,7 +1587,9 @@
     }
 
     function calculateAge(dobString) {
+      if (!dobString) return '--';
       const dob = new Date(dobString);
+      if (isNaN(dob.getTime())) return '--';
       return Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
     }
 
@@ -1463,15 +1600,15 @@
     }
 
     function getBMIBadgeClass(val) {
-      if (!val) return 'bg-slate-100 text-slate-600';
-      if (val < 18.5) return 'bg-amber-100 text-amber-800';
-      if (val < 25) return 'bg-emerald-100 text-emerald-800';
-      return 'bg-red-100 text-red-800';
+      if (!val) return 'card-sub-app text-muted';
+      if (val < 18.5) return 'bg-amber-500/20 text-amber-600';
+      if (val < 25) return 'bg-emerald-500/20 text-emerald-600';
+      return 'bg-red-500/20 text-red-600';
     }
 
     function showModal(contentHtml) {
       const box = document.getElementById('modal-box');
-      box.innerHTML = contentHtml + `<div class="pt-4 border-t flex justify-end"><button onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Close</button></div>`;
+      box.innerHTML = contentHtml + `<div class="pt-4 border-t border-app flex justify-end"><button onclick="closeModal()" class="btn-secondary-app px-4 py-2 rounded-xl text-xs font-semibold">Close</button></div>`;
       document.getElementById('modal-backdrop').classList.remove('hidden');
     }
 
@@ -1488,17 +1625,17 @@
     // CREATE & EDIT MODALS
     function openNewPatientModal() {
       showModal(`
-        <h3 class="text-base font-bold text-slate-900">Add New Patient</h3>
+        <h3 class="text-base font-bold text-app">Add New Patient</h3>
         <form id="form-new-patient" class="space-y-3 pt-2">
-          <div><label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label><input type="text" id="m-name" required class="w-full border p-2 rounded-xl text-xs"></div>
+          <div><label class="block text-[10px] font-bold uppercase text-muted">Full Name</label><input type="text" id="m-name" required class="input-app w-full p-2 rounded-xl text-xs"></div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">National ID</label><input type="text" id="m-id" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Phone</label><input type="text" id="m-phone" class="w-full border p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">National ID</label><input type="text" id="m-id" required class="input-app w-full p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Phone</label><input type="text" id="m-phone" class="input-app w-full p-2 rounded-xl text-xs"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Date of Birth</label><input type="date" id="m-dob" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Gender</label>
-              <select id="m-gender" class="w-full border p-2 rounded-xl text-xs">
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Date of Birth</label><input type="date" id="m-dob" required class="input-app w-full p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Gender</label>
+              <select id="m-gender" class="input-app w-full p-2 rounded-xl text-xs">
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -1506,8 +1643,8 @@
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Height (cm)</label><input type="number" id="m-height" placeholder="e.g. 175" class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Weight (kg)</label><input type="number" id="m-weight" placeholder="e.g. 70" class="w-full border p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Height (cm)</label><input type="number" id="m-height" placeholder="e.g. 175" class="input-app w-full p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Weight (kg)</label><input type="number" id="m-weight" placeholder="e.g. 70" class="input-app w-full p-2 rounded-xl text-xs"></div>
           </div>
           <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2.5 rounded-xl text-xs shadow-sm">Create Patient</button>
         </form>
@@ -1538,17 +1675,17 @@
     function openEditPatientProfileModal() {
       const p = currentPatient;
       showModal(`
-        <h3 class="text-base font-bold text-slate-900">Edit Patient Profile</h3>
+        <h3 class="text-base font-bold text-app">Edit Patient Profile</h3>
         <form id="form-edit-patient" class="space-y-3 pt-2">
-          <div><label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label><input type="text" id="m-name" value="${escapeHTML(p.full_name)}" required class="w-full border p-2 rounded-xl text-xs"></div>
+          <div><label class="block text-[10px] font-bold uppercase text-muted">Full Name</label><input type="text" id="m-name" value="${escapeHTML(p.full_name)}" required class="input-app w-full p-2 rounded-xl text-xs"></div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">National ID</label><input type="text" id="m-id" value="${escapeHTML(p.national_id)}" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Phone</label><input type="text" id="m-phone" value="${escapeHTML(p.phone || '')}" class="w-full border p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">National ID</label><input type="text" id="m-id" value="${escapeHTML(p.national_id)}" required class="input-app w-full p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Phone</label><input type="text" id="m-phone" value="${escapeHTML(p.phone || '')}" class="input-app w-full p-2 rounded-xl text-xs"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Date of Birth</label><input type="date" id="m-dob" value="${escapeHTML(p.dob)}" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Gender</label>
-              <select id="m-gender" class="w-full border p-2 rounded-xl text-xs">
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Date of Birth</label><input type="date" id="m-dob" value="${escapeHTML(p.dob)}" required class="input-app w-full p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Gender</label>
+              <select id="m-gender" class="input-app w-full p-2 rounded-xl text-xs">
                 <option value="Male" ${p.gender === 'Male' ? 'selected' : ''}>Male</option>
                 <option value="Female" ${p.gender === 'Female' ? 'selected' : ''}>Female</option>
                 <option value="Other" ${p.gender === 'Other' ? 'selected' : ''}>Other</option>
@@ -1556,8 +1693,8 @@
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Height (cm)</label><input type="number" id="m-height" value="${p.height_cm || ''}" class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Weight (kg)</label><input type="number" id="m-weight" value="${p.weight_kg || ''}" class="w-full border p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Height (cm)</label><input type="number" id="m-height" value="${p.height_cm || ''}" class="input-app w-full p-2 rounded-xl text-xs"></div>
+            <div><label class="block text-[10px] font-bold uppercase text-muted">Weight (kg)</label><input type="number" id="m-weight" value="${p.weight_kg || ''}" class="input-app w-full p-2 rounded-xl text-xs"></div>
           </div>
           <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2.5 rounded-xl text-xs shadow-sm">Update Profile</button>
         </form>
@@ -1585,15 +1722,15 @@
 
     function openAddAllergyModal() {
       showModal(`
-        <h3 class="text-base font-bold text-slate-900">Add Drug Allergy</h3>
+        <h3 class="text-base font-bold text-app">Add Drug Allergy</h3>
         <form id="f-allergy" class="space-y-3 pt-2">
           <div>
-            <label class="block text-[10px] font-bold uppercase text-slate-600">Allergy Name</label>
-            <input type="text" id="m-aname" list="dl-allergies" placeholder="Type allergy name..." required class="w-full border p-2 rounded-xl text-xs">
+            <label class="block text-[10px] font-bold uppercase text-muted">Allergy Name</label>
+            <input type="text" id="m-aname" list="dl-allergies" placeholder="Type allergy name..." required class="input-app w-full p-2 rounded-xl text-xs">
           </div>
           <div>
-            <label class="block text-[10px] font-bold uppercase text-slate-600">Reaction / Notes</label>
-            <input type="text" id="m-anotes" placeholder="e.g. Rash, Anaphylaxis" class="w-full border p-2 rounded-xl text-xs">
+            <label class="block text-[10px] font-bold uppercase text-muted">Reaction / Notes</label>
+            <input type="text" id="m-anotes" placeholder="e.g. Rash, Anaphylaxis" class="input-app w-full p-2 rounded-xl text-xs">
           </div>
           <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2 rounded-xl text-xs">Save Allergy</button>
         </form>
@@ -1617,10 +1754,10 @@
 
     function openAddPMHModal() {
       showModal(`
-        <h3 class="text-base font-bold">Add Medical Condition</h3>
+        <h3 class="text-base font-bold text-app">Add Medical Condition</h3>
         <form id="f-pmh" class="space-y-3 pt-2">
-          <input type="text" id="m-disease" list="dl-diseases" placeholder="Type condition..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="number" id="m-year" value="${new Date().getFullYear()}" class="w-full border p-2 rounded-xl text-xs">
+          <input type="text" id="m-disease" list="dl-diseases" placeholder="Type condition..." required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="number" id="m-year" value="${new Date().getFullYear()}" class="input-app w-full p-2 rounded-xl text-xs">
           <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
         </form>
       `);
@@ -1643,10 +1780,10 @@
 
     function openAddPSHModal() {
       showModal(`
-        <h3 class="text-base font-bold">Add Surgery</h3>
+        <h3 class="text-base font-bold text-app">Add Surgery</h3>
         <form id="f-psh" class="space-y-3 pt-2">
-          <input type="text" id="m-surgery" list="dl-surgeries" placeholder="Type surgery..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="number" id="m-syear" value="${new Date().getFullYear()}" class="w-full border p-2 rounded-xl text-xs">
+          <input type="text" id="m-surgery" list="dl-surgeries" placeholder="Type surgery..." required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="number" id="m-syear" value="${new Date().getFullYear()}" class="input-app w-full p-2 rounded-xl text-xs">
           <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
         </form>
       `);
@@ -1669,12 +1806,12 @@
 
     function openAddMedModal() {
       showModal(`
-        <h3 class="text-base font-bold">Add Medication</h3>
+        <h3 class="text-base font-bold text-app">Add Medication</h3>
         <form id="f-med" class="space-y-3 pt-2">
-          <input type="text" id="m-mname" list="dl-medications" placeholder="Medication Name..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="text" id="m-mdose" placeholder="Dose (e.g. 500mg)" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="text" id="m-mfreq" placeholder="Frequency (e.g. Twice Daily)" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="text" id="m-mroute" value="Oral" required class="w-full border p-2 rounded-xl text-xs">
+          <input type="text" id="m-mname" list="dl-medications" placeholder="Medication Name..." required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="text" id="m-mdose" placeholder="Dose (e.g. 500mg)" required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="text" id="m-mfreq" placeholder="Frequency (e.g. Twice Daily)" required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="text" id="m-mroute" value="Oral" required class="input-app w-full p-2 rounded-xl text-xs">
           <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
         </form>
       `);
@@ -1697,30 +1834,92 @@
       });
     }
 
+    // ADD LAB RESULT WITH "OTHERS" CHOICE FOR DOCTORS
     function openAddLabModal() {
+      const optionsHtml = masterLabs.map(l => `<option value="${escapeHTML(l.name)}">${escapeHTML(l.name)}</option>`).join('');
+
       showModal(`
-        <h3 class="text-base font-bold">Add Lab Result</h3>
+        <h3 class="text-base font-bold text-app">Add Lab Result</h3>
         <form id="f-lab" class="space-y-3 pt-2">
-          <input type="text" id="m-lname" list="dl-labs" placeholder="Lab Test Name..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="number" step="0.01" id="m-lval" placeholder="Result Value" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="date" id="m-ldate" value="${new Date().toISOString().split('T')[0]}" required class="w-full border p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-muted">Lab Test Name</label>
+            <select id="m-lselect" class="input-app w-full p-2.5 rounded-xl text-xs font-semibold">
+              <option value="">-- Select Lab Test --</option>
+              ${optionsHtml}
+              <option value="OTHERS" class="font-bold text-blue-600">+ Others (Custom Lab Test)...</option>
+            </select>
+          </div>
+
+          <div id="custom-lab-fields" class="hidden space-y-2 border border-app p-3 rounded-xl bg-slate-500/5">
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-muted">Custom Lab Name</label>
+              <input type="text" id="m-custom-lname" placeholder="Enter custom lab name..." class="input-app w-full p-2 rounded-xl text-xs">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-muted">Normal Range</label>
+                <input type="text" id="m-custom-lrange" placeholder="e.g. 70-99" class="input-app w-full p-2 rounded-xl text-xs">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-muted">Unit</label>
+                <input type="text" id="m-custom-lunit" placeholder="e.g. mg/dL" class="input-app w-full p-2 rounded-xl text-xs">
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-muted">Result Value</label>
+            <input type="number" step="0.01" id="m-lval" placeholder="Numeric result..." required class="input-app w-full p-2 rounded-xl text-xs">
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-muted">Test Date</label>
+            <input type="date" id="m-ldate" value="${new Date().toISOString().split('T')[0]}" required class="input-app w-full p-2 rounded-xl text-xs">
+          </div>
+
+          <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">Save Lab Result</button>
         </form>
       `);
 
+      const selectElem = document.getElementById('m-lselect');
+      const customContainer = document.getElementById('custom-lab-fields');
+
+      selectElem.addEventListener('change', () => {
+        if (selectElem.value === 'OTHERS') {
+          customContainer.classList.remove('hidden');
+        } else {
+          customContainer.classList.add('hidden');
+        }
+      });
+
       document.getElementById('f-lab').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('m-lname').value.trim();
-        await ensureMasterExists('master_labs', name);
+        let selectedName = selectElem.value;
+        let range = '', unit = '';
 
-        const labMeta = masterLabs.find(x => x.name.toLowerCase() === name.toLowerCase()) || {};
+        if (!selectedName) return alert("Please select or enter a lab test name.");
+
+        if (selectedName === 'OTHERS') {
+          selectedName = document.getElementById('m-custom-lname').value.trim();
+          range = document.getElementById('m-custom-lrange').value.trim();
+          unit = document.getElementById('m-custom-lunit').value.trim();
+
+          if (!selectedName) return alert("Please enter the custom lab name.");
+
+          // SAVE TO MASTER LABS WITH doctor_id = currentUser.id ONLY
+          await ensureMasterExists('master_labs', selectedName, { normal_range: range, unit: unit });
+        } else {
+          const matched = masterLabs.find(x => x.name.toLowerCase() === selectedName.toLowerCase()) || {};
+          range = matched.normal_range || '';
+          unit = matched.unit || '';
+        }
 
         await supabaseClient.from('patient_labs').insert([{
           patient_id: currentPatient.id,
-          lab_name: name,
+          lab_name: selectedName,
           result_value: parseFloat(document.getElementById('m-lval').value),
-          unit: labMeta.unit || '',
-          normal_range: labMeta.normal_range || '',
+          unit: unit,
+          normal_range: range,
           test_date: document.getElementById('m-ldate').value
         }]);
 
@@ -1743,18 +1942,18 @@
 
       showModal(`
         <div class="space-y-3">
-          <div class="border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">${visitId ? 'Edit Clinical Visit Note' : 'Record Clinical Encounter'}</h3>
+          <div class="border-b border-app pb-2">
+            <h3 class="text-base font-bold text-app">${visitId ? 'Edit Clinical Visit Note' : 'Record Clinical Encounter'}</h3>
           </div>
           
           <form id="f-visit-editor" class="space-y-3">
             <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Chief Complaint</label>
-              <input type="text" id="m-comp" value="${escapeHTML(existingComplaint)}" placeholder="e.g. Chest pain on exertion" class="w-full border p-2.5 rounded-xl text-xs font-medium">
+              <label class="block text-[10px] font-bold uppercase text-muted">Chief Complaint</label>
+              <input type="text" id="m-comp" value="${escapeHTML(existingComplaint)}" placeholder="e.g. Chest pain on exertion" class="input-app w-full p-2.5 rounded-xl text-xs font-medium">
             </div>
             <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Clinical Notes</label>
-              <textarea id="m-vnotes" rows="12" placeholder="Write free-text clinical notes, history, examination findings, and management plans here..." required class="w-full border p-3 rounded-xl text-xs font-sans leading-relaxed">${escapeHTML(existingNotes)}</textarea>
+              <label class="block text-[10px] font-bold uppercase text-muted">Clinical Notes</label>
+              <textarea id="m-vnotes" rows="10" placeholder="Write free-text clinical notes, examination findings, and plans here..." required class="input-app w-full p-3 rounded-xl text-xs font-sans leading-relaxed">${escapeHTML(existingNotes)}</textarea>
             </div>
             <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">${visitId ? 'Update Visit Note' : 'Save Visit Note'}</button>
           </form>
@@ -1782,15 +1981,15 @@
 
     function openAddVitalsModal() {
       showModal(`
-        <h3 class="text-base font-bold">Add Vital Signs</h3>
+        <h3 class="text-base font-bold text-app">Add Vital Signs</h3>
         <form id="f-vitals" class="space-y-3 pt-2">
           <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="m-sys" placeholder="Systolic BP" class="border p-2 rounded-xl text-xs">
-            <input type="number" id="m-dia" placeholder="Diastolic BP" class="border p-2 rounded-xl text-xs">
+            <input type="number" id="m-sys" placeholder="Systolic BP" class="input-app p-2 rounded-xl text-xs">
+            <input type="number" id="m-dia" placeholder="Diastolic BP" class="input-app p-2 rounded-xl text-xs">
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="m-hr" placeholder="Heart Rate" class="border p-2 rounded-xl text-xs">
-            <input type="number" id="m-spo2" placeholder="SpO2 (%)" class="border p-2 rounded-xl text-xs">
+            <input type="number" id="m-hr" placeholder="Heart Rate" class="input-app p-2 rounded-xl text-xs">
+            <input type="number" id="m-spo2" placeholder="SpO2 (%)" class="input-app p-2 rounded-xl text-xs">
           </div>
           <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save Vitals</button>
         </form>
@@ -1813,11 +2012,11 @@
 
     function openAddRadiologyModal() {
       showModal(`
-        <h3 class="text-base font-bold">Add Radiology Link</h3>
+        <h3 class="text-base font-bold text-app">Add Radiology Link</h3>
         <form id="f-rad" class="space-y-3 pt-2">
-          <input type="text" id="m-rtitle" placeholder="Exam Title" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="url" id="m-rurl" placeholder="Image URL (https://...)" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="date" id="m-rdate" value="${new Date().toISOString().split('T')[0]}" required class="w-full border p-2 rounded-xl text-xs">
+          <input type="text" id="m-rtitle" placeholder="Exam Title" required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="url" id="m-rurl" placeholder="Image URL (https://...)" required class="input-app w-full p-2 rounded-xl text-xs">
+          <input type="date" id="m-rdate" value="${new Date().toISOString().split('T')[0]}" required class="input-app w-full p-2 rounded-xl text-xs">
           <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save Radiology</button>
         </form>
       `);
