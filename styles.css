@@ -1,10 +1,22 @@
 /* ==============================================================================
-   MEDIDESK PROFESSIONAL CLINICAL STYLESHEET
+   MEDIDESK ENHANCED DYNAMIC THEMING & RESPONSIVE CLINICAL STYLESHEET
    ============================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sub: #f1f5f9;
+  --header-bg: #0f172a;
+  --text-app: #0f172a;
+  --text-muted: #64748b;
+  --border-app: #e2e8f0;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #e2e8f0;
+  --btn-sec-text: #1e293b;
+  --table-header: #f8fafc;
+
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --primary-bg: #eff6ff;
@@ -14,54 +26,169 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-/* THEME PALETTES */
-[data-theme="blue"] {
+/* 1. LIGHT CLEAN THEME */
+[data-theme="light"] {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sub: #f1f5f9;
+  --header-bg: #0f172a;
+  --text-app: #0f172a;
+  --text-muted: #64748b;
+  --border-app: #e2e8f0;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #e2e8f0;
+  --btn-sec-text: #1e293b;
+  --table-header: #f8fafc;
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --primary-bg: #eff6ff;
   --primary-border: #bfdbfe;
-  --primary-ring: rgba(37, 99, 235, 0.25);
 }
 
+/* 2. DARK MODE THEME */
+[data-theme="dark"] {
+  --bg-app: #090d16;
+  --bg-card: #131b2e;
+  --bg-sub: #1e293b;
+  --header-bg: #0b1120;
+  --text-app: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-app: #222f47;
+  --input-bg: #1a2438;
+  --btn-sec-bg: #1e293b;
+  --btn-sec-text: #e2e8f0;
+  --table-header: #172033;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-bg: #1e293b;
+  --primary-border: #2563eb;
+}
+
+/* 3. ROYAL BLUE THEME */
+[data-theme="blue"] {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-sub: #f1f5f9;
+  --header-bg: #0f172a;
+  --text-app: #0f172a;
+  --text-muted: #64748b;
+  --border-app: #e2e8f0;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #e2e8f0;
+  --btn-sec-text: #1e293b;
+  --table-header: #f8fafc;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-bg: #eff6ff;
+  --primary-border: #bfdbfe;
+}
+
+/* 4. EMERALD GREEN THEME */
 [data-theme="emerald"] {
+  --bg-app: #f4fbf7;
+  --bg-card: #ffffff;
+  --bg-sub: #e6f7ef;
+  --header-bg: #064e3b;
+  --text-app: #064e3b;
+  --text-muted: #059669;
+  --border-app: #a7f3d0;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #a7f3d0;
+  --btn-sec-text: #064e3b;
+  --table-header: #ecfdf5;
   --primary: #059669;
   --primary-hover: #047857;
   --primary-bg: #ecfdf5;
   --primary-border: #a7f3d0;
-  --primary-ring: rgba(5, 150, 105, 0.25);
 }
 
+/* 5. PURPLE VIOLET THEME */
 [data-theme="purple"] {
+  --bg-app: #faf5ff;
+  --bg-card: #ffffff;
+  --bg-sub: #f3e8ff;
+  --header-bg: #3b0764;
+  --text-app: #3b0764;
+  --text-muted: #7c3aed;
+  --border-app: #ddd6fe;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #ddd6fe;
+  --btn-sec-text: #3b0764;
+  --table-header: #f5f3ff;
   --primary: #7c3aed;
   --primary-hover: #6d28d9;
   --primary-bg: #f5f3ff;
   --primary-border: #ddd6fe;
-  --primary-ring: rgba(124, 58, 237, 0.25);
 }
 
+/* 6. ROSE RED THEME */
 [data-theme="rose"] {
+  --bg-app: #fff5f5;
+  --bg-card: #ffffff;
+  --bg-sub: #ffe4e6;
+  --header-bg: #4c0519;
+  --text-app: #4c0519;
+  --text-muted: #e11d48;
+  --border-app: #fecdd3;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #fecdd3;
+  --btn-sec-text: #4c0519;
+  --table-header: #fff1f2;
   --primary: #e11d48;
   --primary-hover: #be123c;
   --primary-bg: #fff1f2;
   --primary-border: #fecdd3;
-  --primary-ring: rgba(225, 29, 72, 0.25);
 }
 
+/* 7. SLATE GRAY THEME */
 [data-theme="slate"] {
+  --bg-app: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-sub: #e2e8f0;
+  --header-bg: #0f172a;
+  --text-app: #0f172a;
+  --text-muted: #475569;
+  --border-app: #cbd5e1;
+  --input-bg: #ffffff;
+  --btn-sec-bg: #cbd5e1;
+  --btn-sec-text: #0f172a;
+  --table-header: #f8fafc;
   --primary: #334155;
   --primary-hover: #1e293b;
   --primary-bg: #f8fafc;
   --primary-border: #cbd5e1;
-  --primary-ring: rgba(51, 65, 85, 0.25);
 }
 
+/* GLOBAL ELEMENTS BOUND TO CSS THEME VARIABLES */
 body {
   font-family: var(--font-sans) !important;
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
+  background-color: var(--bg-app) !important;
+  color: var(--text-app) !important;
 }
 
-/* DYNAMIC THEME UTILITY CLASSES */
+.bg-app { background-color: var(--bg-app) !important; }
+.card-app { background-color: var(--bg-card) !important; }
+.card-sub-app { background-color: var(--bg-sub) !important; }
+.header-app { background-color: var(--header-bg) !important; }
+.text-app { color: var(--text-app) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.border-app { border-color: var(--border-app) !important; }
+.divide-app > * + * { border-color: var(--border-app) !important; }
+.table-header-app { background-color: var(--table-header) !important; }
+
+/* INPUT STYLING */
+.input-app {
+  background-color: var(--input-bg) !important;
+  color: var(--text-app) !important;
+  border-color: var(--border-app) !important;
+}
+
+.btn-secondary-app {
+  background-color: var(--btn-sec-bg) !important;
+  color: var(--btn-sec-text) !important;
+}
+
+/* DYNAMIC THEME ACCENT UTILITY CLASSES */
 .theme-primary-bg { background-color: var(--primary) !important; }
 .theme-primary-bg-hover:hover { background-color: var(--primary-hover) !important; }
 .theme-primary-text { color: var(--primary) !important; }
@@ -76,18 +203,18 @@ body {
 .tab-active {
   border-bottom-color: var(--primary) !important;
   color: var(--primary) !important;
-  font-weight: 600;
+  font-weight: 700;
   background-color: var(--primary-bg);
 }
 
-/* FORMS & INPUTS */
+/* FORMS & INPUTS FOCUS */
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 3px var(--primary-ring) !important;
 }
 
-/* MODALS */
+/* MODAL ANIMATIONS */
 .modal-overlay {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -107,6 +234,13 @@ input:focus, select:focus, textarea:focus {
 
 /* CUSTOM SCROLLBARS */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-track { background: var(--bg-app); }
+::-webkit-scrollbar-thumb { background: var(--border-app); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* MOBILE RESPONSIVE OPTIMIZATIONS */
+@media (max-width: 640px) {
+  button, input, select, textarea {
+    min-height: 42px;
+  }
+}
