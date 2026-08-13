@@ -2014,21 +2014,33 @@
       showModal(`
         <h3 class="text-base font-bold text-app">Add Radiology Link</h3>
         <form id="f-rad" class="space-y-3 pt-2">
-          <input type="text" id="m-rtitle" placeholder="Exam Title" required class="input-app w-full p-2 rounded-xl text-xs">
-          <input type="url" id="m-rurl" placeholder="Image URL (https://...)" required class="input-app w-full p-2 rounded-xl text-xs">
-          <input type="date" id="m-rdate" value="${new Date().toISOString().split('T')[0]}" required class="input-app w-full p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save Radiology</button>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-muted">Title / Exam Type</label>
+            <input type="text" id="m-rad-title" placeholder="e.g. Chest X-Ray PA View" required class="input-app w-full p-2 rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-muted">Image / DICOM / Drive URL</label>
+            <input type="url" id="m-rad-url" placeholder="https://..." required class="input-app w-full p-2 rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-muted">Exam Date</label>
+            <input type="date" id="m-rad-date" value="${new Date().toISOString().split('T')[0]}" required class="input-app w-full p-2 rounded-xl text-xs">
+          </div>
+          <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">Save Radiology Record</button>
         </form>
       `);
 
       document.getElementById('f-rad').addEventListener('submit', async (e) => {
         e.preventDefault();
-        await supabaseClient.from('patient_radiology').insert([{
+        const payload = {
           patient_id: currentPatient.id,
-          title: document.getElementById('m-rtitle').value,
-          image_url: document.getElementById('m-rurl').value,
-          exam_date: document.getElementById('m-rdate').value
-        }]);
+          title: document.getElementById('m-rad-title').value.trim(),
+          image_url: document.getElementById('m-rad-url').value.trim(),
+          exam_date: document.getElementById('m-rad-date').value
+        };
+
+        const { error } = await supabaseClient.from('patient_radiology').insert([payload]);
+        if (error) return alert("Error adding radiology record: " + escapeHTML(error.message));
 
         closeModal();
         await loadProfileSubTables();
