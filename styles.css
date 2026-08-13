@@ -1,0 +1,112 @@
+/* ==============================================================================
+   MEDIDESK PROFESSIONAL CLINICAL STYLESHEET
+   ============================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-bg: #eff6ff;
+  --primary-border: #bfdbfe;
+  --primary-ring: rgba(37, 99, 235, 0.25);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* THEME PALETTES */
+[data-theme="blue"] {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-bg: #eff6ff;
+  --primary-border: #bfdbfe;
+  --primary-ring: rgba(37, 99, 235, 0.25);
+}
+
+[data-theme="emerald"] {
+  --primary: #059669;
+  --primary-hover: #047857;
+  --primary-bg: #ecfdf5;
+  --primary-border: #a7f3d0;
+  --primary-ring: rgba(5, 150, 105, 0.25);
+}
+
+[data-theme="purple"] {
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --primary-bg: #f5f3ff;
+  --primary-border: #ddd6fe;
+  --primary-ring: rgba(124, 58, 237, 0.25);
+}
+
+[data-theme="rose"] {
+  --primary: #e11d48;
+  --primary-hover: #be123c;
+  --primary-bg: #fff1f2;
+  --primary-border: #fecdd3;
+  --primary-ring: rgba(225, 29, 72, 0.25);
+}
+
+[data-theme="slate"] {
+  --primary: #334155;
+  --primary-hover: #1e293b;
+  --primary-bg: #f8fafc;
+  --primary-border: #cbd5e1;
+  --primary-ring: rgba(51, 65, 85, 0.25);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* DYNAMIC THEME UTILITY CLASSES */
+.theme-primary-bg { background-color: var(--primary) !important; }
+.theme-primary-bg-hover:hover { background-color: var(--primary-hover) !important; }
+.theme-primary-text { color: var(--primary) !important; }
+.theme-light-bg { background-color: var(--primary-bg) !important; }
+.theme-border { border-color: var(--primary-border) !important; }
+
+/* TABS */
+.tab-btn {
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+}
+.tab-active {
+  border-bottom-color: var(--primary) !important;
+  color: var(--primary) !important;
+  font-weight: 600;
+  background-color: var(--primary-bg);
+}
+
+/* FORMS & INPUTS */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-ring) !important;
+}
+
+/* MODALS */
+.modal-overlay {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-card {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* CUSTOM SCROLLBARS */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
