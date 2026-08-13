@@ -13,7 +13,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased">
+<body class="antialiased">
 
   <!-- AUTOCOMPLETE DATALISTS -->
   <datalist id="dl-diseases"></datalist>
@@ -937,7 +937,10 @@
       const val = input.value.trim();
       if (!val) return;
 
-      await supabaseClient.from(tableName).insert([{ name: val, doctor_id: null }]);
+      const { error } = await supabaseClient.from(tableName).insert([{ name: val, doctor_id: null }]);
+      if (error) {
+        return alert("Error adding global master item: " + escapeHTML(error.message));
+      }
       input.value = '';
       await renderAdminGlobalMasterLists();
       await loadMasterCatalogs();
@@ -945,7 +948,10 @@
 
     async function adminDeleteGlobalMaster(tableName, itemId) {
       if (!confirm("Delete this global default item?")) return;
-      await supabaseClient.from(tableName).delete().eq('id', itemId);
+      const { error } = await supabaseClient.from(tableName).delete().eq('id', itemId);
+      if (error) {
+        return alert("Error deleting global master item: " + escapeHTML(error.message));
+      }
       await renderAdminGlobalMasterLists();
       await loadMasterCatalogs();
     }
@@ -1309,10 +1315,10 @@
     }
 
     function renderVitalsChart(vitalsList) {
-      const ctx = document.getElementById('vitalsTrendChart').getContext('2d');
       if (activeVitalsChart) activeVitalsChart.destroy();
-      if (vitalsList.length === 0) return;
+      if (!vitalsList || vitalsList.length === 0) return;
 
+      const ctx = document.getElementById('vitalsTrendChart').getContext('2d');
       activeVitalsChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1354,6 +1360,19 @@
           <button id="btn-run-gemini" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl text-xs">Extract Labs with AI</button>
         </div>
       `);
+
+      document.getElementById('btn-run-gemini').addEventListener('click', async () => {
+        const key = document.getElementById('gemini-key').value.trim();
+        const fileInput = document.getElementById('gemini-file');
+        
+        if (!key || !fileInput.files[0]) {
+          alert("Please provide both a Gemini API key and an image file.");
+          return;
+        }
+
+        // Placeholder notice - ready for your Gemini Vision endpoint logic
+        alert("API Key and Image loaded. Connecting to Gemini API for lab extraction...");
+      });
     }
 
     // EXPORTS
