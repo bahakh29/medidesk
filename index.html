@@ -1,462 +1,210 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="blue">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MediDesk - Clinical EHR & Management System</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediDesk - Clinical Workspace</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
-<body class="antialiased">
+<body>
 
-  <!-- AUTOCOMPLETE DATALISTS -->
-  <datalist id="dl-diseases"></datalist>
-  <datalist id="dl-surgeries"></datalist>
-  <datalist id="dl-medications"></datalist>
-  <datalist id="dl-labs"></datalist>
-  <datalist id="dl-allergies"></datalist>
-
-  <!-- AUTH SCREEN -->
-  <div id="auth-screen" class="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-    <div class="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 border border-slate-100">
-      <div class="text-center mb-6">
-        <div class="inline-flex items-center justify-center w-16 h-16 theme-light-bg theme-primary-text rounded-2xl mb-3 shadow-inner">
-          <i id="auth-app-icon" data-lucide="stethoscope" class="w-8 h-8"></i>
-        </div>
-        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">MediDesk</h1>
-        <p class="text-slate-500 text-xs uppercase tracking-wider font-semibold mt-1">Clinical Portal</p>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-container">
+    <div class="login-card">
+      <div id="login-logo-container" class="logo-box">
+        <span id="logo-placeholder-icon">🏥</span>
+        <img id="login-logo-img" src="" alt="App Logo" class="hidden" />
       </div>
+      <h2>MediDesk</h2>
+      <p class="subtitle">Clinical Management System</p>
 
-      <div id="auth-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-medium"></div>
-
-      <form id="login-form" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Doctor Email</label>
-          <input type="email" id="auth-email" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2" placeholder="dr.smith@medidesk.com">
+      <form id="login-form">
+        <div class="form-group">
+          <label>Username / Email</label>
+          <input type="text" id="username" placeholder="Enter username" required />
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Password</label>
-          <input type="password" id="auth-password" required class="w-full px-4 py-2.5 border rounded-xl text-sm focus:ring-2" placeholder="••••••••">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="••••••••" required />
         </div>
-        <button type="submit" id="btn-login" class="w-full theme-primary-bg theme-primary-bg-hover text-white font-semibold py-2.5 rounded-xl shadow-md transition">Sign In</button>
+        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
       </form>
     </div>
   </div>
 
   <!-- MAIN APP CONTAINER -->
-  <div id="app-screen" class="hidden min-h-screen flex flex-col">
-    <!-- NAVIGATION HEADER -->
-    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-40 border-b border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
-        <div class="flex items-center space-x-3 cursor-pointer" id="nav-brand">
-          <i id="header-app-icon" data-lucide="stethoscope" class="w-7 h-7 theme-primary-text"></i>
-          <span class="text-xl font-bold tracking-tight">MediDesk</span>
-        </div>
-        <div class="flex items-center space-x-3">
-          <button id="btn-admin-panel" class="hidden bg-amber-500 hover:bg-amber-600 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 shadow-sm transition">
-            <i data-lucide="shield-check" class="w-4 h-4"></i>
-            <span>Admin Control</span>
-          </button>
-
-          <button id="btn-theme-modal" title="Layout Theme" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-xl border border-slate-700 flex items-center space-x-1 text-xs">
-            <i data-lucide="palette" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Theme</span>
-          </button>
-
-          <!-- TOP RIGHT DOCTOR PROFILE DISPLAY & BUTTON -->
-          <button id="btn-my-profile" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 flex items-center space-x-2 text-xs font-semibold">
-            <i data-lucide="user" class="w-4 h-4 theme-primary-text"></i>
-            <span id="user-display">Dr. Account</span>
-          </button>
-          
-          <button id="btn-backup" title="Backup Database" class="bg-slate-800 hover:bg-slate-700 text-slate-200 p-2 rounded-xl border border-slate-700 flex items-center space-x-1 text-xs">
-            <i data-lucide="database-backup" class="w-4 h-4"></i>
-            <span class="hidden sm:inline">Backup</span>
-          </button>
-          <button id="btn-logout" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm">
-            <i data-lucide="log-out" class="w-4 h-4"></i>
-            <span>Logout</span>
-          </button>
-        </div>
+  <div id="app-screen" class="app-container hidden">
+    
+    <!-- Top Mobile Header -->
+    <header class="mobile-header">
+      <button id="mobile-menu-toggle" class="btn-icon">☰</button>
+      <div class="brand-inline">
+        <img class="app-logo-img hidden" src="" alt="Logo" />
+        <span>MediDesk</span>
       </div>
     </header>
 
-    <!-- MAIN BODY -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-box-sm">
+          <span class="logo-placeholder-icon">🏥</span>
+          <img class="app-logo-img hidden" src="" alt="Logo" />
+        </div>
+        <h3>MediDesk</h3>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-target="patients-sec">👥 Patients</button>
+        <button class="nav-btn" data-target="lab-catalog-sec">🧪 Lab Test Catalog</button>
+        <button class="nav-btn admin-only" data-target="admin-sec">⚙️ Admin Settings</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="btn btn-danger btn-block">Log Out</button>
+      </div>
+    </aside>
 
-      <!-- SECTION 1: PATIENT DIRECTORY -->
-      <section id="directory-section" class="space-y-6">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Patient Directory</h2>
-            <p class="text-slate-500 text-xs">Manage patient electronic health records and clinical history.</p>
-          </div>
-          <div class="flex gap-2">
-            <button id="btn-export-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm">
-              <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-              <span>Export Excel</span>
-            </button>
-            <button id="btn-add-patient" class="theme-primary-bg theme-primary-bg-hover text-white px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm">
-              <i data-lucide="user-plus" class="w-4 h-4"></i>
-              <span>Add Patient</span>
-            </button>
-          </div>
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- PATIENTS SECTION -->
+      <section id="patients-sec" class="content-section">
+        <div class="section-header">
+          <h2>Patient Registry</h2>
+          <button id="add-patient-btn" class="btn btn-primary">+ Add New Patient</button>
         </div>
 
-        <!-- FILTERS -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Search Patient</label>
-              <input type="text" id="search-query" placeholder="Name, ID, Phone..." class="w-full px-3 py-2 border rounded-xl text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Chronic Condition</label>
-              <input type="text" id="filter-disease" list="dl-diseases" placeholder="Type to search..." class="w-full px-3 py-2 border rounded-xl text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Surgical History</label>
-              <input type="text" id="filter-surgery" list="dl-surgeries" placeholder="Type to search..." class="w-full px-3 py-2 border rounded-xl text-xs">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Medication</label>
-              <input type="text" id="filter-medication" list="dl-medications" placeholder="Type to search..." class="w-full px-3 py-2 border rounded-xl text-xs">
-            </div>
-          </div>
-          <div class="flex justify-between items-center pt-2 border-t border-slate-100 text-xs text-slate-600">
-            <span>Showing <strong id="patient-count" class="theme-primary-text font-bold">0</strong> patient records</span>
-            <button id="btn-reset-filters" class="text-xs theme-primary-text font-semibold hover:underline">Reset Filters</button>
-          </div>
-        </div>
-
-        <!-- DIRECTORY TABLE -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-100/80 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
                 <tr>
-                  <th class="p-4">Patient Name</th>
-                  <th class="p-4">ID / National No.</th>
-                  <th class="p-4">Phone</th>
-                  <th class="p-4">DOB (Age)</th>
-                  <th class="p-4">Gender</th>
-                  <th class="p-4">BMI</th>
-                  <th class="p-4 text-right">Actions</th>
+                  <th>Full Name</th>
+                  <th>Date of Birth (DD/MM/YYYY)</th>
+                  <th>Gender</th>
+                  <th>Phone</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody id="patients-table-body" class="divide-y divide-slate-100"></tbody>
+              <tbody id="patients-list-body">
+                <!-- Patient rows injected dynamically -->
+              </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- SECTION 2: PATIENT PROFILE -->
-      <section id="profile-section" class="hidden space-y-6">
-        <div class="flex justify-between items-center">
-          <button id="btn-back-directory" class="text-slate-600 hover:text-slate-900 flex items-center space-x-1 text-xs font-semibold">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i>
-            <span>Back to Patients</span>
-          </button>
-          <div class="flex gap-2">
-            <button id="btn-edit-patient-profile" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1">
-              <i data-lucide="user-cog" class="w-4 h-4"></i>
-              <span>Edit Patient Profile</span>
-            </button>
-            <button id="btn-open-gemini" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>AI Lab Import</span>
-            </button>
+      <!-- PATIENT DETAILS / LABS SECTION -->
+      <section id="patient-detail-sec" class="content-section hidden">
+        <button id="back-to-patients" class="btn btn-secondary mb-3">← Back to Patients</button>
+
+        <div class="card mb-4" id="patient-info-card">
+          <div class="card-header-flex">
+            <h3 id="patient-detail-name">Patient Name</h3>
+            <button id="delete-patient-btn" class="btn btn-danger-soft">🗑️ Delete Patient Record</button>
           </div>
+          <p><strong>Date of Birth:</strong> <span id="patient-detail-dob">--/--/----</span></p>
+          <p><strong>Phone:</strong> <span id="patient-detail-phone">---</span></p>
         </div>
 
-        <!-- HEADER CARD -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <div class="flex items-center space-x-3">
-                <h1 id="p-name" class="text-3xl font-black text-slate-900 tracking-tight">--</h1>
-                <span id="p-gender-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 uppercase">--</span>
-              </div>
-              <p class="text-xs text-slate-500 mt-1">
-                ID: <span id="p-id" class="font-semibold text-slate-800">--</span> | 
-                DOB: <span id="p-dob" class="font-semibold text-slate-800">--</span> (<span id="p-age">--</span> yrs) | 
-                Phone: <span id="p-phone" class="font-semibold text-slate-800">--</span>
-              </p>
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center space-x-6">
-              <div>
-                <span class="block text-[10px] uppercase font-bold text-slate-400">Height / Weight</span>
-                <span id="p-height-weight" class="text-sm font-bold text-slate-800">-- cm / -- kg</span>
-              </div>
-              <div class="border-l border-slate-200 pl-6">
-                <span class="block text-[10px] uppercase font-bold text-slate-400">Baseline BMI</span>
-                <span id="p-bmi" class="text-lg font-black theme-primary-text">--</span>
-                <span id="p-bmi-cat" class="text-xs font-semibold ml-1 text-slate-500"></span>
-              </div>
-            </div>
+        <div class="card">
+          <div class="section-header">
+            <h3>Patient Lab Results</h3>
+            <button id="add-patient-lab-btn" class="btn btn-primary">+ Record Lab Result</button>
           </div>
 
-          <!-- ALLERGIES -->
-          <div id="allergy-banner" class="bg-red-50/80 border border-red-200 rounded-xl p-3 flex justify-between items-center text-xs">
-            <div class="flex items-center space-x-2 text-red-900">
-              <i data-lucide="alert-circle" class="w-5 h-5 text-red-600 flex-shrink-0"></i>
-              <div>
-                <strong class="font-bold">Drug Allergies: </strong>
-                <span id="allergy-list-text" class="text-red-700">None Recorded</span>
-              </div>
-            </div>
-            <button id="btn-add-allergy" class="text-[10px] bg-red-100 hover:bg-red-200 text-red-800 font-bold px-2 py-1 rounded-lg">+ Add Allergy</button>
-          </div>
-        </div>
-
-        <!-- PROFILE TABS -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div class="border-b border-slate-200 flex overflow-x-auto bg-slate-50/50" id="profile-tabs-header">
-            <button class="px-5 py-3 text-xs font-semibold tab-btn tab-active" data-tab="pmh-psh">Medical & Surgical History</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="meds">Chronic Medications</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="labs">Lab Results</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="lab-trends">Lab Trends & Graphs</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="visits">Visits & Notes</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="vitals">Vital Signs</button>
-            <button class="px-5 py-3 text-xs font-semibold tab-btn text-slate-500" data-tab="radiology">Radiology</button>
-          </div>
-
-          <div class="p-6">
-            <!-- TAB 1: PMH/PSH -->
-            <div id="tab-pmh-psh" class="tab-content grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="space-y-3">
-                <div class="flex justify-between items-center border-b pb-2">
-                  <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 theme-primary-text"></i> Medical Conditions</h3>
-                  <button id="btn-add-pmh" class="text-[10px] theme-light-bg theme-primary-text font-bold px-2.5 py-1 rounded-lg">+ Add Condition</button>
-                </div>
-                <div id="pmh-list" class="space-y-2"></div>
-              </div>
-              <div class="space-y-3">
-                <div class="flex justify-between items-center border-b pb-2">
-                  <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="scissors" class="w-4 h-4 theme-primary-text"></i> Surgical History</h3>
-                  <button id="btn-add-psh" class="text-[10px] theme-light-bg theme-primary-text font-bold px-2.5 py-1 rounded-lg">+ Add Surgery</button>
-                </div>
-                <div id="psh-list" class="space-y-2"></div>
-              </div>
-            </div>
-
-            <!-- TAB 2: MEDS -->
-            <div id="tab-meds" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Active Chronic Medications</h3>
-                <button id="btn-add-med" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Add Medication</button>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 border-b text-[10px] font-bold uppercase text-slate-500">
-                    <tr><th class="p-3">Medication</th><th class="p-3">Dose</th><th class="p-3">Frequency</th><th class="p-3">Route</th><th class="p-3 text-right">Actions</th></tr>
-                  </thead>
-                  <tbody id="meds-list" class="divide-y divide-slate-100"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- TAB 3: LABS TABLE -->
-            <div id="tab-labs" class="tab-content hidden space-y-4">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
-                <div>
-                  <h3 class="font-bold text-slate-800 text-sm">Laboratory Results</h3>
-                  <p class="text-[11px] text-slate-500">Filter lab tests or record new laboratory parameters.</p>
-                </div>
-                <div class="flex gap-2 w-full sm:w-auto">
-                  <input type="text" id="lab-search-input" placeholder="Search lab results..." class="px-3 py-1.5 border rounded-xl text-xs w-full sm:w-48">
-                  <button id="btn-add-lab" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl flex-shrink-0">+ Add Lab</button>
-                </div>
-              </div>
-
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 border-b text-[10px] font-bold uppercase text-slate-500">
-                    <tr><th class="p-3">Test Date</th><th class="p-3">Lab Name</th><th class="p-3">Result</th><th class="p-3">Normal Range</th><th class="p-3">Source</th><th class="p-3 text-right">Actions</th></tr>
-                  </thead>
-                  <tbody id="labs-list" class="divide-y divide-slate-100"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- TAB 4: LAB TRENDS GRAPHING -->
-            <div id="tab-lab-trends" class="tab-content hidden space-y-4">
-              <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-3">
-                <div>
-                  <h3 class="font-bold text-slate-800 text-sm">Laboratory Longitudinal Trends</h3>
-                  <p class="text-[11px] text-slate-500">Plot lab parameter changes chronologically over time.</p>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <label class="text-xs font-bold text-slate-600 uppercase">Select Test:</label>
-                  <select id="lab-chart-select" class="px-3 py-1.5 border rounded-xl text-xs bg-white font-semibold outline-none">
-                    <option value="">-- Choose Lab Test --</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 h-80 w-full relative">
-                <canvas id="labTrendChart"></canvas>
-              </div>
-            </div>
-
-            <!-- TAB 5: VISITS -->
-            <div id="tab-visits" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Clinical Visits & Encounters</h3>
-                <button id="btn-add-visit" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Record New Visit</button>
-              </div>
-              <div id="visits-list" class="space-y-4"></div>
-            </div>
-
-            <!-- TAB 6: VITALS -->
-            <div id="tab-vitals" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Vital Signs History</h3>
-                <button id="btn-add-vitals" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Record Vitals</button>
-              </div>
-              <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 h-80"><canvas id="vitalsTrendChart"></canvas></div>
-            </div>
-
-            <!-- TAB 7: RADIOLOGY -->
-            <div id="tab-radiology" class="tab-content hidden space-y-4">
-              <div class="flex justify-between items-center border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-sm">Radiology & Imaging Links</h3>
-                <button id="btn-add-radiology" class="text-xs theme-primary-bg theme-primary-bg-hover text-white font-semibold px-3 py-1.5 rounded-xl">+ Add Radiology</button>
-              </div>
-              <div id="radiology-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date (DD/MM/YYYY)</th>
+                  <th>Test Name</th>
+                  <th>Result</th>
+                  <th>Normal Range</th>
+                  <th>Unit</th>
+                </tr>
+              </thead>
+              <tbody id="patient-labs-body">
+                <!-- Lab results injected dynamically -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
-      <!-- SECTION 3: ADMIN DASHBOARD -->
-      <section id="admin-section" class="hidden space-y-6">
-        <div class="flex justify-between items-center border-b pb-4">
-          <div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Admin Dashboard</h2>
-            <p class="text-slate-500 text-xs">Manage global settings, branding, default catalogs, and doctor accounts.</p>
-          </div>
-          <button id="btn-admin-close" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-xl font-semibold text-slate-700">Close Dashboard</button>
+      <!-- LAB CATALOG SECTION -->
+      <section id="lab-catalog-sec" class="content-section hidden">
+        <div class="section-header">
+          <h2>Lab Test Catalog</h2>
+          <button id="add-doctor-lab-btn" class="btn btn-primary">+ Add My Custom Lab Test</button>
         </div>
+        <p class="text-muted mb-3">Below are the global lab tests available to all clinicians, plus your personal custom tests.</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- BRANDING ICON -->
-          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
-            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="image" class="w-4 h-4 theme-primary-text"></i> App Icon Branding</h3>
-            <div class="grid grid-cols-3 gap-2 pt-2">
-              <button data-icon-option="stethoscope" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="stethoscope" class="w-5 h-5 theme-primary-text"></i> Stethoscope
-              </button>
-              <button data-icon-option="activity" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="activity" class="w-5 h-5 theme-primary-text"></i> Activity
-              </button>
-              <button data-icon-option="heart-pulse" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="heart-pulse" class="w-5 h-5 theme-primary-text"></i> Pulse
-              </button>
-              <button data-icon-option="cross" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="cross" class="w-5 h-5 theme-primary-text"></i> Cross
-              </button>
-              <button data-icon-option="shield-plus" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="shield-plus" class="w-5 h-5 theme-primary-text"></i> Shield
-              </button>
-              <button data-icon-option="building-2" class="p-3 border rounded-xl hover:border-blue-500 flex flex-col items-center gap-1 text-[10px]">
-                <i data-lucide="building-2" class="w-5 h-5 theme-primary-text"></i> Hospital
-              </button>
-            </div>
-          </div>
-
-          <!-- DOCTOR ACCOUNTS TABLE WITH EDIT PRIVILEGES -->
-          <div class="md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
-            <div class="flex justify-between items-center">
-              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 theme-primary-text"></i> Doctor Accounts Management</h3>
-              <span id="admin-doctor-count" class="text-[10px] bg-slate-100 px-2.5 py-1 rounded-full font-bold">0 Accounts</span>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 border-b uppercase font-bold text-[10px] text-slate-500">
-                  <tr>
-                    <th class="p-3">Doctor Name</th>
-                    <th class="p-3">Email</th>
-                    <th class="p-3">Specialty</th>
-                    <th class="p-3">Phone</th>
-                    <th class="p-3">Clinic Location</th>
-                    <th class="p-3">Role</th>
-                    <th class="p-3">Status</th>
-                    <th class="p-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="admin-doctors-list" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
+        <div class="card">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Test Name</th>
+                  <th>Normal Range</th>
+                  <th>Unit</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="lab-catalog-body">
+                <!-- Lab Catalog rows -->
+              </tbody>
+            </table>
           </div>
         </div>
+      </section>
 
-        <!-- GLOBAL DEFAULT CATALOGS EDITOR (ADMIN ONLY) -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-          <div class="flex justify-between items-center border-b pb-3">
-            <div>
-              <h3 class="font-bold text-slate-800 text-base flex items-center gap-2"><i data-lucide="database" class="w-5 h-5 theme-primary-text"></i> Global Default Master Catalogs Manager</h3>
-              <p class="text-xs text-slate-500">Add or edit global starter options (Diseases, Surgeries, Medications, Labs, Allergies) visible to all doctor accounts.</p>
+      <!-- ADMIN SETTINGS SECTION -->
+      <section id="admin-sec" class="content-section hidden">
+        <h2>Admin Settings</h2>
+
+        <!-- Logo Upload Card -->
+        <div class="card mb-4">
+          <h3>Application Logo & Branding</h3>
+          <p class="text-muted">Upload a custom logo. This will dynamically update the app header, sidebar, and login screen.</p>
+          
+          <div class="logo-upload-preview-wrapper">
+            <div id="admin-logo-preview-box" class="logo-box">
+              <span class="logo-placeholder-icon">🏥</span>
+              <img id="admin-logo-img" src="" alt="Preview" class="hidden" />
+            </div>
+            <div class="form-group">
+              <label for="logo-file-input">Choose Image File (PNG/JPG/SVG)</label>
+              <input type="file" id="logo-file-input" accept="image/*" />
             </div>
           </div>
+          <button id="save-logo-btn" class="btn btn-primary mt-2">Save Global Logo</button>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-5 gap-4 pt-2">
-            <!-- Global Diseases -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Diseases</h4>
-              <div class="flex gap-1">
-                <input type="text" id="admin-add-disease" placeholder="New disease..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_diseases', 'admin-add-disease')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
-              </div>
-              <div id="admin-list-diseases" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
-            </div>
-
-            <!-- Global Surgeries -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Surgeries</h4>
-              <div class="flex gap-1">
-                <input type="text" id="admin-add-surgery" placeholder="New surgery..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_surgeries', 'admin-add-surgery')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
-              </div>
-              <div id="admin-list-surgeries" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
-            </div>
-
-            <!-- Global Medications -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Medications</h4>
-              <div class="flex gap-1">
-                <input type="text" id="admin-add-med" placeholder="New medication..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_medications', 'admin-add-med')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
-              </div>
-              <div id="admin-list-meds" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
-            </div>
-
-            <!-- Global Labs -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Labs</h4>
-              <div class="flex gap-1">
-                <input type="text" id="admin-add-lab" placeholder="New lab test..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_labs', 'admin-add-lab')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
-              </div>
-              <div id="admin-list-labs" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
-            </div>
-
-            <!-- Global Allergies -->
-            <div class="space-y-2 border rounded-xl p-3 bg-slate-50/50">
-              <h4 class="font-bold text-xs text-slate-800">Global Allergies</h4>
-              <div class="flex gap-1">
-                <input type="text" id="admin-add-allergy" placeholder="New allergy..." class="w-full px-2 py-1 border rounded-lg text-xs">
-                <button onclick="adminAddGlobalMaster('master_allergies', 'admin-add-allergy')" class="bg-blue-600 text-white font-bold text-xs px-2 py-1 rounded-lg">+</button>
-              </div>
-              <div id="admin-list-allergies" class="max-h-40 overflow-y-auto space-y-1 pt-1"></div>
-            </div>
+        <!-- Global Lab Management Card -->
+        <div class="card">
+          <div class="section-header">
+            <h3>Global Lab Test Management</h3>
+            <button id="admin-add-global-lab-btn" class="btn btn-primary">+ Add Global Lab Test</button>
+          </div>
+          <p class="text-muted">Changes made here are applied globally for all doctors across the platform.</p>
+          
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Test Name</th>
+                  <th>Min Range</th>
+                  <th>Max Range</th>
+                  <th>Unit</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-labs-body">
+                <!-- Admin global labs injected -->
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
@@ -464,1377 +212,84 @@
     </main>
   </div>
 
-  <!-- MODAL BACKDROP -->
-  <div id="modal-backdrop" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 modal-overlay">
-    <div id="modal-box" class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 modal-card border border-slate-100"></div>
-  </div>
-
-  <!-- PRINTABLE VISIT SUMMARY TEMPLATE -->
-  <div id="print-template" class="hidden p-8 bg-white text-slate-900 space-y-6">
-    <div class="border-b border-slate-300 pb-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-2xl font-bold theme-primary-text">CLINICAL VISIT SUMMARY</h1>
-        <p class="text-xs text-slate-500">MediDesk EHR Platform</p>
+  <!-- MODALS -->
+  <!-- Patient Form Modal -->
+  <dialog id="patient-modal" class="custom-modal">
+    <form id="patient-form" method="dialog">
+      <h3 id="patient-modal-title">Add Patient</h3>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="p-name" required />
       </div>
-      <div class="text-right text-xs">
-        <p class="font-bold" id="print-doc">Dr. Account</p>
-        <p id="print-date">Date: --</p>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" id="p-dob" required />
       </div>
-    </div>
-    <div id="print-patient-info" class="bg-slate-50 p-4 rounded-xl border text-xs grid grid-cols-2 gap-2"></div>
-    <div class="space-y-1">
-      <h3 class="font-bold text-xs uppercase text-slate-500 border-b pb-1">Chief Complaint</h3>
-      <p id="print-complaint" class="text-xs font-semibold">--</p>
-    </div>
-    <div class="space-y-1">
-      <h3 class="font-bold text-xs uppercase text-slate-500 border-b pb-1">Clinical Notes</h3>
-      <div id="print-notes" class="text-xs whitespace-pre-wrap">--</div>
-    </div>
-  </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="text" id="p-phone" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('patient-modal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Patient</button>
+      </div>
+    </form>
+  </dialog>
 
-  <!-- JS SCRIPT -->
-  <script>
-    const SUPABASE_URL = "https://doqbayjmjxpwdvurezhr.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvcWJheWptanhwd2R2dXJlemhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTg3ODgsImV4cCI6MjEwMjE5NDc4OH0.zeIntRpqtA2VWfx1qL5chDrrtY297R8EqthbzFxYPF8";
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let currentUser = null;
-    let currentUserProfile = null;
-    let currentPatient = null;
-    let masterDiseases = [], masterSurgeries = [], masterMeds = [], masterLabs = [], masterAllergies = [];
-    let currentPatientLabsData = [];
-    let activeLabChart = null, activeVitalsChart = null;
-    let searchDebounceTimer = null;
-
-    const THEMES = {
-      blue:    { name: 'Royal Blue', color: '#2563eb' },
-      emerald: { name: 'Emerald Green', color: '#059669' },
-      purple:  { name: 'Purple Violet', color: '#7c3aed' },
-      rose:    { name: 'Rose Red', color: '#e11d48' },
-      slate:   { name: 'Slate Dark', color: '#334155' }
-    };
-
-    function escapeHTML(str) {
-      if (str === null || str === undefined) return '';
-      return String(str).replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-    }
-
-    function sanitizeUrl(url) {
-      if (!url) return '#';
-      try {
-        const parsed = new URL(url);
-        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '#';
-      } catch {
-        return '#';
-      }
-    }
-
-    function applyTheme(themeKey) {
-      document.documentElement.setAttribute('data-theme', themeKey || 'blue');
-    }
-
-    async function setAppIcon(iconName) {
-      const authIcon = document.getElementById('auth-app-icon');
-      const headerIcon = document.getElementById('header-app-icon');
-      if (authIcon) authIcon.setAttribute('data-lucide', iconName);
-      if (headerIcon) headerIcon.setAttribute('data-lucide', iconName);
-      lucide.createIcons();
-    }
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      bindStaticEventListeners();
-      bindDelegatedEventListeners();
-      await loadAppSettings();
-      
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        await onLoginSuccess(session.user);
-      } else {
-        document.getElementById('auth-screen').classList.remove('hidden');
-      }
-
-      document.getElementById('login-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('auth-email').value;
-        const password = document.getElementById('auth-password').value;
-        const errBox = document.getElementById('auth-error');
-        errBox.classList.add('hidden');
-
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) {
-          errBox.textContent = escapeHTML(error.message);
-          errBox.classList.remove('hidden');
-        } else {
-          await onLoginSuccess(data.user);
-        }
-      });
-    });
-
-    async function loadAppSettings() {
-      const { data } = await supabaseClient.from('app_settings').select('key, value');
-      if (data) {
-        const iconSetting = data.find(x => x.key === 'app_icon');
-        if (iconSetting) setAppIcon(iconSetting.value);
-      }
-    }
-
-    async function onLoginSuccess(user) {
-      currentUser = user;
-
-      const { data: profile } = await supabaseClient
-        .from('doctor_profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      currentUserProfile = profile || { theme_color: 'blue', is_admin: false, full_name: user.email };
-
-      if (currentUserProfile.is_active === false) {
-        alert("Your account is suspended. Please contact system administrator.");
-        return logout();
-      }
-
-      applyTheme(currentUserProfile.theme_color);
-
-      document.getElementById('auth-screen').classList.add('hidden');
-      document.getElementById('app-screen').classList.remove('hidden');
-      
-      // DISPLAY DOCTOR NAME ON TOP RIGHT
-      document.getElementById('user-display').textContent = escapeHTML(currentUserProfile.full_name || user.email);
-
-      if (currentUserProfile.is_admin) {
-        document.getElementById('btn-admin-panel').classList.remove('hidden');
-      }
-
-      await loadMasterCatalogs();
-      await fetchPatients();
-    }
-
-    async function logout() {
-      await supabaseClient.auth.signOut();
-      window.location.reload();
-    }
-
-    function bindStaticEventListeners() {
-      document.getElementById('nav-brand').addEventListener('click', () => showSection('directory'));
-      document.getElementById('btn-backup').addEventListener('click', exportFullDatabaseJSON);
-      document.getElementById('btn-logout').addEventListener('click', logout);
-      document.getElementById('btn-export-excel').addEventListener('click', exportFilteredPatientsExcel);
-      document.getElementById('btn-add-patient').addEventListener('click', openNewPatientModal);
-      document.getElementById('btn-edit-patient-profile').addEventListener('click', openEditPatientProfileModal);
-      document.getElementById('btn-reset-filters').addEventListener('click', resetFilters);
-      document.getElementById('btn-theme-modal').addEventListener('click', openThemeModal);
-      
-      // MY DOCTOR PROFILE BUTTON
-      document.getElementById('btn-my-profile').addEventListener('click', openMyProfileModal);
-
-      document.getElementById('search-query').addEventListener('input', () => {
-        clearTimeout(searchDebounceTimer);
-        searchDebounceTimer = setTimeout(fetchPatients, 300);
-      });
-      document.getElementById('filter-disease').addEventListener('input', fetchPatients);
-      document.getElementById('filter-surgery').addEventListener('input', fetchPatients);
-      document.getElementById('filter-medication').addEventListener('input', fetchPatients);
-
-      document.getElementById('btn-back-directory').addEventListener('click', () => showSection('directory'));
-      document.getElementById('btn-open-gemini').addEventListener('click', openGeminiLabModal);
-
-      document.getElementById('btn-add-pmh').addEventListener('click', openAddPMHModal);
-      document.getElementById('btn-add-psh').addEventListener('click', openAddPSHModal);
-      document.getElementById('btn-add-med').addEventListener('click', openAddMedModal);
-      document.getElementById('btn-add-lab').addEventListener('click', openAddLabModal);
-      document.getElementById('btn-add-visit').addEventListener('click', () => openVisitModal());
-      document.getElementById('btn-add-vitals').addEventListener('click', openAddVitalsModal);
-      document.getElementById('btn-add-radiology').addEventListener('click', openAddRadiologyModal);
-      document.getElementById('btn-add-allergy').addEventListener('click', openAddAllergyModal);
-
-      document.getElementById('lab-search-input').addEventListener('input', filterLabsTable);
-      document.getElementById('lab-chart-select').addEventListener('change', renderLabChart);
-
-      document.getElementById('btn-admin-panel').addEventListener('click', openAdminPanel);
-      document.getElementById('btn-admin-close').addEventListener('click', () => showSection('directory'));
-    }
-
-    function bindDelegatedEventListeners() {
-      document.getElementById('patients-table-body').addEventListener('click', (e) => {
-        const target = e.target.closest('[data-patient-id]');
-        if (target) {
-          const patientId = target.getAttribute('data-patient-id');
-          if (patientId) openPatientProfile(patientId);
-        }
-      });
-
-      document.getElementById('profile-tabs-header').addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-tab]');
-        if (btn) switchTab(btn.getAttribute('data-tab'), btn);
-      });
-
-      ['pmh-list', 'psh-list', 'meds-list', 'labs-list'].forEach(containerId => {
-        document.getElementById(containerId).addEventListener('click', (e) => {
-          const btn = e.target.closest('[data-action="delete-sub"]');
-          if (btn) deleteSubRecord(btn.getAttribute('data-table'), btn.getAttribute('data-record-id'));
-        });
-      });
-
-      document.getElementById('visits-list').addEventListener('click', (e) => {
-        const pdfBtn = e.target.closest('[data-action="export-pdf"]');
-        if (pdfBtn) exportVisitSummaryPDF(pdfBtn.getAttribute('data-visit-id'));
-
-        const editBtn = e.target.closest('[data-action="edit-visit"]');
-        if (editBtn) openVisitModal(editBtn.getAttribute('data-visit-id'));
-      });
-
-      document.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-icon-option]');
-        if (btn) updateAppIcon(btn.getAttribute('data-icon-option'));
-      });
-    }
-
-    // DOCTOR PROFILE EDIT MODAL
-    function openMyProfileModal() {
-      const p = currentUserProfile;
-      showModal(`
-        <div class="space-y-4">
-          <div class="border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">My Doctor Profile</h3>
-            <p class="text-xs text-slate-500">View and update your personal and clinic information. All fields are optional.</p>
-          </div>
-          
-          <form id="f-doctor-profile" class="space-y-3">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label>
-              <input type="text" id="doc-p-name" value="${escapeHTML(p.full_name || '')}" placeholder="e.g. Dr. Jane Smith" class="w-full border p-2.5 rounded-xl text-xs font-semibold">
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Specialty</label>
-                <input type="text" id="doc-p-spec" value="${escapeHTML(p.specialty || '')}" placeholder="e.g. Internal Medicine / Cardiology" class="w-full border p-2.5 rounded-xl text-xs">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Phone Number(s)</label>
-                <input type="text" id="doc-p-phone" value="${escapeHTML(p.phone_number || '')}" placeholder="e.g. +123 456 7890" class="w-full border p-2.5 rounded-xl text-xs">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Clinic Location(s)</label>
-              <input type="text" id="doc-p-loc" value="${escapeHTML(p.clinic_location || '')}" placeholder="e.g. Building B, 3rd Floor, Medical Center" class="w-full border p-2.5 rounded-xl text-xs">
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Email Address</label>
-              <input type="email" value="${escapeHTML(currentUser.email)}" disabled class="w-full border p-2.5 rounded-xl text-xs bg-slate-100 text-slate-500 font-mono">
-            </div>
-
-            <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">Save Profile Updates</button>
-          </form>
+  <!-- Lab Test Modal (Global/Doctor) -->
+  <dialog id="lab-test-modal" class="custom-modal">
+    <form id="lab-test-form" method="dialog">
+      <h3 id="lab-modal-title">Add Lab Test</h3>
+      <input type="hidden" id="lab-is-global" value="false" />
+      <input type="hidden" id="lab-edit-id" value="" />
+      <div class="form-group">
+        <label>Test Name</label>
+        <input type="text" id="lab-name" required />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Min Range</label>
+          <input type="number" step="any" id="lab-min" />
         </div>
-      `);
-
-      document.getElementById('f-doctor-profile').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const updatedName = document.getElementById('doc-p-name').value.trim() || currentUser.email;
-        const updatedSpec = document.getElementById('doc-p-spec').value.trim();
-        const updatedPhone = document.getElementById('doc-p-phone').value.trim();
-        const updatedLoc = document.getElementById('doc-p-loc').value.trim();
-
-        const { error } = await supabaseClient
-          .from('doctor_profiles')
-          .update({
-            full_name: updatedName,
-            specialty: updatedSpec,
-            phone_number: updatedPhone,
-            clinic_location: updatedLoc
-          })
-          .eq('id', currentUser.id);
-
-        if (error) return alert("Error saving profile: " + escapeHTML(error.message));
-
-        currentUserProfile.full_name = updatedName;
-        currentUserProfile.specialty = updatedSpec;
-        currentUserProfile.phone_number = updatedPhone;
-        currentUserProfile.clinic_location = updatedLoc;
-
-        document.getElementById('user-display').textContent = escapeHTML(updatedName);
-        closeModal();
-      });
-    }
-
-    // ADMIN EDIT ANY DOCTOR'S PROFILE
-    async function openAdminEditDoctorModal(doctorId) {
-      const { data: doc } = await supabaseClient.from('doctor_profiles').select('*').eq('id', doctorId).single();
-      if (!doc) return alert("Doctor record not found.");
-
-      showModal(`
-        <div class="space-y-4">
-          <div class="border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">Admin - Edit Doctor Profile</h3>
-            <p class="text-xs text-slate-500">Updating profile info for ${escapeHTML(doc.email)}</p>
-          </div>
-          
-          <form id="f-admin-edit-doc" class="space-y-3">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label>
-              <input type="text" id="admin-doc-name" value="${escapeHTML(doc.full_name || '')}" class="w-full border p-2.5 rounded-xl text-xs font-semibold">
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Specialty</label>
-                <input type="text" id="admin-doc-spec" value="${escapeHTML(doc.specialty || '')}" class="w-full border p-2.5 rounded-xl text-xs">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-slate-600">Phone Number(s)</label>
-                <input type="text" id="admin-doc-phone" value="${escapeHTML(doc.phone_number || '')}" class="w-full border p-2.5 rounded-xl text-xs">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Clinic Location(s)</label>
-              <input type="text" id="admin-doc-loc" value="${escapeHTML(doc.clinic_location || '')}" class="w-full border p-2.5 rounded-xl text-xs">
-            </div>
-
-            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 py-2.5 rounded-xl text-xs font-bold shadow-sm">Update Doctor Profile</button>
-          </form>
+        <div class="form-group">
+          <label>Max Range</label>
+          <input type="number" step="any" id="lab-max" />
         </div>
-      `);
-
-      document.getElementById('f-admin-edit-doc').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const { error } = await supabaseClient
-          .from('doctor_profiles')
-          .update({
-            full_name: document.getElementById('admin-doc-name').value.trim(),
-            specialty: document.getElementById('admin-doc-spec').value.trim(),
-            phone_number: document.getElementById('admin-doc-phone').value.trim(),
-            clinic_location: document.getElementById('admin-doc-loc').value.trim()
-          })
-          .eq('id', doctorId);
-
-        if (error) return alert("Update failed: " + escapeHTML(error.message));
-
-        closeModal();
-        await loadAdminDoctorsList();
-      });
-    }
-
-    function openThemeModal() {
-      const html = `
-        <h3 class="text-lg font-bold text-slate-900">Customize Layout Theme</h3>
-        <p class="text-xs text-slate-500">Select your preferred accent color scheme. Saved automatically.</p>
-        
-        <div class="grid grid-cols-1 gap-2 pt-3">
-          ${Object.keys(THEMES).map(key => `
-            <button onclick="saveUserTheme('${key}')" class="p-3 rounded-xl border text-left flex items-center justify-between hover:border-slate-400">
-              <span class="text-xs font-semibold text-slate-800">${THEMES[key].name}</span>
-              <span class="w-5 h-5 rounded-full" style="background-color: ${THEMES[key].color}"></span>
-            </button>
-          `).join('')}
-        </div>
-      `;
-      showModal(html);
-    }
-
-    async function saveUserTheme(themeKey) {
-      applyTheme(themeKey);
-      currentUserProfile.theme_color = themeKey;
-
-      await supabaseClient
-        .from('doctor_profiles')
-        .update({ theme_color: themeKey })
-        .eq('id', currentUser.id);
-
-      closeModal();
-    }
-
-    // ADMIN DASHBOARD & MASTER CATALOG MANAGERS
-    async function openAdminPanel() {
-      if (!currentUserProfile.is_admin) return;
-      showSection('admin');
-      await loadAdminDoctorsList();
-      await renderAdminGlobalMasterLists();
-    }
-
-    async function updateAppIcon(iconName) {
-      if (!currentUserProfile.is_admin) return;
-
-      const { error } = await supabaseClient
-        .from('app_settings')
-        .upsert({ key: 'app_icon', value: iconName, updated_at: new Date().toISOString() });
-
-      if (!error) {
-        await setAppIcon(iconName);
-        alert(`App icon updated to "${iconName}" globally!`);
-      }
-    }
-
-    async function loadAdminDoctorsList() {
-      const { data: doctors } = await supabaseClient.from('doctor_profiles').select('*').order('created_at');
-      const tbody = document.getElementById('admin-doctors-list');
-      document.getElementById('admin-doctor-count').textContent = `${(doctors || []).length} Accounts`;
-      tbody.innerHTML = '';
-
-      (doctors || []).forEach(doc => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-3 font-semibold text-slate-800">${escapeHTML(doc.full_name || 'N/A')}</td>
-          <td class="p-3 text-slate-500">${escapeHTML(doc.email)}</td>
-          <td class="p-3 text-slate-600">${escapeHTML(doc.specialty || '--')}</td>
-          <td class="p-3 text-slate-600">${escapeHTML(doc.phone_number || '--')}</td>
-          <td class="p-3 text-slate-600">${escapeHTML(doc.clinic_location || '--')}</td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${doc.is_admin ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">${doc.is_admin ? 'ADMIN' : 'DOCTOR'}</span></td>
-          <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${doc.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${doc.is_active ? 'ACTIVE' : 'SUSPENDED'}</span></td>
-          <td class="p-3 text-right space-x-1">
-            <button onclick="openAdminEditDoctorModal('${escapeHTML(doc.id)}')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-2 py-1 rounded-lg">Edit Profile</button>
-            ${doc.id === currentUser.id ? '' : `
-              <button onclick="toggleDoctorStatus('${escapeHTML(doc.id)}', ${!doc.is_active})" class="text-[10px] font-bold px-2 py-1 rounded-lg ${doc.is_active ? 'bg-red-50 text-red-600 hover:bg-red-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}">
-                ${doc.is_active ? 'Suspend' : 'Activate'}
-              </button>
-            `}
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    async function toggleDoctorStatus(doctorId, newStatus) {
-      await supabaseClient.from('doctor_profiles').update({ is_active: newStatus }).eq('id', doctorId);
-      await loadAdminDoctorsList();
-    }
-
-    async function renderAdminGlobalMasterLists() {
-      const catalogs = [
-        { table: 'master_diseases', containerId: 'admin-list-diseases' },
-        { table: 'master_surgeries', containerId: 'admin-list-surgeries' },
-        { table: 'master_medications', containerId: 'admin-list-meds' },
-        { table: 'master_labs', containerId: 'admin-list-labs' },
-        { table: 'master_allergies', containerId: 'admin-list-allergies' }
-      ];
-
-      for (const cat of catalogs) {
-        const { data } = await supabaseClient.from(cat.table).select('*').is('doctor_id', null).order('name');
-        const container = document.getElementById(cat.containerId);
-        if (!container) continue;
-        container.innerHTML = (data || []).length === 0 ? `<p class="text-[10px] text-slate-400">No global defaults.</p>` : '';
-
-        (data || []).forEach(item => {
-          const div = document.createElement('div');
-          div.className = "flex justify-between items-center text-[11px] bg-white p-1.5 border rounded-lg";
-          div.innerHTML = `
-            <span class="truncate font-medium text-slate-700">${escapeHTML(item.name)}</span>
-            <button onclick="adminDeleteGlobalMaster('${cat.table}', '${item.id}')" class="text-red-500 hover:text-red-700 font-bold ml-1">✕</button>
-          `;
-          container.appendChild(div);
-        });
-      }
-    }
-
-    async function adminAddGlobalMaster(tableName, inputId) {
-      const input = document.getElementById(inputId);
-      const val = input.value.trim();
-      if (!val) return;
-
-      const { error } = await supabaseClient.from(tableName).insert([{ name: val, doctor_id: null }]);
-      if (error) {
-        return alert("Error adding global master item: " + escapeHTML(error.message));
-      }
-      input.value = '';
-      await renderAdminGlobalMasterLists();
-      await loadMasterCatalogs();
-    }
-
-    async function adminDeleteGlobalMaster(tableName, itemId) {
-      if (!confirm("Delete this global default item?")) return;
-      const { error } = await supabaseClient.from(tableName).delete().eq('id', itemId);
-      if (error) {
-        return alert("Error deleting global master item: " + escapeHTML(error.message));
-      }
-      await renderAdminGlobalMasterLists();
-      await loadMasterCatalogs();
-    }
-
-    // MASTER CATALOG LOADERS
-    async function loadMasterCatalogs() {
-      const [dRes, sRes, mRes, lRes, aRes] = await Promise.all([
-        supabaseClient.from('master_diseases').select('name, doctor_id').order('name'),
-        supabaseClient.from('master_surgeries').select('name, doctor_id').order('name'),
-        supabaseClient.from('master_medications').select('name, doctor_id').order('name'),
-        supabaseClient.from('master_labs').select('name, normal_range, unit, doctor_id').order('name'),
-        supabaseClient.from('master_allergies').select('name, doctor_id').order('name')
-      ]);
-
-      masterDiseases = dRes.data || [];
-      masterSurgeries = sRes.data || [];
-      masterMeds = mRes.data || [];
-      masterLabs = lRes.data || [];
-      masterAllergies = aRes.data || [];
-
-      populateDatalist('dl-diseases', masterDiseases.map(x => x.name));
-      populateDatalist('dl-surgeries', masterSurgeries.map(x => x.name));
-      populateDatalist('dl-medications', masterMeds.map(x => x.name));
-      populateDatalist('dl-labs', masterLabs.map(x => x.name));
-      populateDatalist('dl-allergies', masterAllergies.map(x => x.name));
-    }
-
-    function populateDatalist(elemId, items) {
-      const dl = document.getElementById(elemId);
-      if (!dl) return;
-      dl.innerHTML = '';
-      [...new Set(items)].forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item;
-        dl.appendChild(opt);
-      });
-    }
-
-    async function ensureMasterExists(tableName, value, metaData = {}) {
-      if (!value) return;
-      const cleanVal = value.trim();
-      if (!cleanVal) return;
-
-      const { data: existing } = await supabaseClient
-        .from(tableName)
-        .select('id')
-        .ilike('name', cleanVal)
-        .maybeSingle();
-
-      if (!existing) {
-        await supabaseClient.from(tableName).insert([{
-          name: cleanVal,
-          doctor_id: currentUser.id,
-          ...metaData
-        }]);
-        await loadMasterCatalogs();
-      }
-    }
-
-    // PATIENTS & DIRECTORY
-    async function fetchPatients() {
-      const query = document.getElementById('search-query').value.trim();
-      const diseaseFilter = document.getElementById('filter-disease').value.trim();
-      const surgeryFilter = document.getElementById('filter-surgery').value.trim();
-      const medFilter = document.getElementById('filter-medication').value.trim();
-
-      let request = supabaseClient
-        .from('patients')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (query) {
-        request = request.or(`full_name.ilike.%${query}%,national_id.ilike.%${query}%,phone.ilike.%${query}%`);
-      }
-
-      if (diseaseFilter) {
-        const { data: pmh } = await supabaseClient.from('patient_pmh').select('patient_id').ilike('disease_name', `%${diseaseFilter}%`);
-        const pIds = (pmh || []).map(x => x.patient_id);
-        if (pIds.length === 0) return renderPatientsTable([]);
-        request = request.in('id', pIds);
-      }
-
-      if (surgeryFilter) {
-        const { data: psh } = await supabaseClient.from('patient_psh').select('patient_id').ilike('surgery_name', `%${surgeryFilter}%`);
-        const pIds = (psh || []).map(x => x.patient_id);
-        if (pIds.length === 0) return renderPatientsTable([]);
-        request = request.in('id', pIds);
-      }
-
-      if (medFilter) {
-        const { data: meds } = await supabaseClient.from('patient_medications').select('patient_id').ilike('medication_name', `%${medFilter}%`);
-        const pIds = (meds || []).map(x => x.patient_id);
-        if (pIds.length === 0) return renderPatientsTable([]);
-        request = request.in('id', pIds);
-      }
-
-      const { data, error } = await request;
-      if (error) return alert("Error fetching patients: " + escapeHTML(error.message));
-
-      renderPatientsTable(data || []);
-    }
-
-    function renderPatientsTable(patients) {
-      document.getElementById('patient-count').textContent = patients.length;
-      const tbody = document.getElementById('patients-table-body');
-      tbody.innerHTML = '';
-
-      if (patients.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No matching patient records found.</td></tr>`;
-        return;
-      }
-
-      patients.forEach(p => {
-        const age = calculateAge(p.dob);
-        const bmi = calculateBMI(p.height_cm, p.weight_kg);
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition cursor-pointer";
-        tr.setAttribute('data-patient-id', escapeHTML(p.id));
-        tr.innerHTML = `
-          <td class="p-4 font-bold theme-primary-text">${escapeHTML(p.full_name)}</td>
-          <td class="p-4 font-mono">${escapeHTML(p.national_id)}</td>
-          <td class="p-4">${escapeHTML(p.phone || '--')}</td>
-          <td class="p-4">${escapeHTML(p.dob)} (${age} yrs)</td>
-          <td class="p-4">${escapeHTML(p.gender || 'Unspecified')}</td>
-          <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${getBMIBadgeClass(bmi.val)}">${bmi.val ? escapeHTML(bmi.val + ' (' + bmi.cat + ')') : '--'}</span></td>
-          <td class="p-4 text-right">
-            <button class="theme-light-bg theme-primary-text px-3 py-1 rounded-lg text-xs font-semibold">View Profile</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function resetFilters() {
-      document.getElementById('search-query').value = '';
-      document.getElementById('filter-disease').value = '';
-      document.getElementById('filter-surgery').value = '';
-      document.getElementById('filter-medication').value = '';
-      fetchPatients();
-    }
-
-    async function openPatientProfile(patientId) {
-      const { data, error } = await supabaseClient.from('patients').select('*').eq('id', patientId).single();
-      if (error) return alert("Failed to load patient: " + escapeHTML(error.message));
-
-      currentPatient = data;
-      renderProfileHeader();
-      await loadProfileSubTables();
-      showSection('profile');
-    }
-
-    function renderProfileHeader() {
-      const p = currentPatient;
-      document.getElementById('p-name').textContent = escapeHTML(p.full_name);
-      document.getElementById('p-gender-badge').textContent = escapeHTML(p.gender || 'Unspecified');
-      document.getElementById('p-id').textContent = escapeHTML(p.national_id);
-      document.getElementById('p-dob').textContent = escapeHTML(p.dob);
-      document.getElementById('p-age').textContent = calculateAge(p.dob);
-      document.getElementById('p-phone').textContent = escapeHTML(p.phone || '--');
-      document.getElementById('p-height-weight').textContent = `${escapeHTML(p.height_cm) || '--'} cm / ${escapeHTML(p.weight_kg) || '--'} kg`;
-
-      const bmi = calculateBMI(p.height_cm, p.weight_kg);
-      document.getElementById('p-bmi').textContent = escapeHTML(bmi.val) || '--';
-      document.getElementById('p-bmi-cat').textContent = bmi.cat ? `(${escapeHTML(bmi.cat)})` : '';
-    }
-
-    async function loadProfileSubTables() {
-      const pId = currentPatient.id;
-
-      const [allergies, pmh, psh, meds, labs, visits, vitals, radiology] = await Promise.all([
-        supabaseClient.from('patient_allergies').select('*').eq('patient_id', pId).order('created_at'),
-        supabaseClient.from('patient_pmh').select('*').eq('patient_id', pId).order('onset_year'),
-        supabaseClient.from('patient_psh').select('*').eq('patient_id', pId).order('surgery_year'),
-        supabaseClient.from('patient_medications').select('*').eq('patient_id', pId).order('created_at'),
-        supabaseClient.from('patient_labs').select('*').eq('patient_id', pId).order('test_date', { ascending: false }),
-        supabaseClient.from('patient_visits').select('*').eq('patient_id', pId).order('visit_date', { ascending: false }),
-        supabaseClient.from('visit_vitals').select('*').eq('patient_id', pId).order('measured_at', { ascending: true }),
-        supabaseClient.from('patient_radiology').select('*').eq('patient_id', pId).order('exam_date', { ascending: false })
-      ]);
-
-      renderAllergiesBanner(allergies.data || []);
-      renderPMH(pmh.data || []);
-      renderPSH(psh.data || []);
-      renderMeds(meds.data || []);
-      
-      currentPatientLabsData = labs.data || [];
-      renderLabsTable(currentPatientLabsData);
-      populateLabTrendsDropdown(currentPatientLabsData);
-
-      renderVisits(visits.data || []);
-      renderVitalsChart(vitals.data || []);
-      renderRadiology(radiology.data || []);
-    }
-
-    function renderAllergiesBanner(allergies) {
-      const textElem = document.getElementById('allergy-list-text');
-      if (allergies.length === 0) {
-        textElem.textContent = "No Known Drug Allergies Recorded";
-        return;
-      }
-      textElem.textContent = allergies.map(a => `${escapeHTML(a.allergy_name)} (${escapeHTML(a.reaction_notes || 'Unspecified')})`).join(' • ');
-    }
-
-    function renderPMH(pmhList) {
-      const container = document.getElementById('pmh-list');
-      container.innerHTML = pmhList.length === 0 ? `<p class="text-xs text-slate-400">No medical conditions recorded.</p>` : '';
-
-      pmhList.forEach(item => {
-        const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-3 rounded-xl flex justify-between items-center text-xs";
-        div.innerHTML = `
-          <div><strong class="font-bold text-slate-800">${escapeHTML(item.disease_name)}</strong><span class="block text-[10px] text-slate-500">Onset: ${item.onset_year}</span></div>
-          <button data-action="delete-sub" data-table="patient_pmh" data-record-id="${escapeHTML(item.id)}" class="text-[10px] text-red-500 hover:underline font-semibold">Delete</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function renderPSH(pshList) {
-      const container = document.getElementById('psh-list');
-      container.innerHTML = pshList.length === 0 ? `<p class="text-xs text-slate-400">No surgical history recorded.</p>` : '';
-
-      pshList.forEach(item => {
-        const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-3 rounded-xl flex justify-between items-center text-xs";
-        div.innerHTML = `
-          <div><strong class="font-bold text-slate-800">${escapeHTML(item.surgery_name)}</strong><span class="block text-[10px] text-slate-500">Year: ${item.surgery_year}</span></div>
-          <button data-action="delete-sub" data-table="patient_psh" data-record-id="${escapeHTML(item.id)}" class="text-[10px] text-red-500 hover:underline font-semibold">Delete</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function renderMeds(medsList) {
-      const tbody = document.getElementById('meds-list');
-      tbody.innerHTML = medsList.length === 0 ? `<tr><td colspan="5" class="p-4 text-xs text-slate-400">No active medications.</td></tr>` : '';
-
-      medsList.forEach(m => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-3 font-semibold text-slate-800">${escapeHTML(m.medication_name)}</td>
-          <td class="p-3">${escapeHTML(m.dose)}</td>
-          <td class="p-3">${escapeHTML(m.frequency)}</td>
-          <td class="p-3">${escapeHTML(m.route)}</td>
-          <td class="p-3 text-right"><button data-action="delete-sub" data-table="patient_medications" data-record-id="${escapeHTML(m.id)}" class="text-xs text-red-500 hover:underline font-semibold">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderLabsTable(labsList) {
-      const tbody = document.getElementById('labs-list');
-      tbody.innerHTML = labsList.length === 0 ? `<tr><td colspan="6" class="p-4 text-xs text-slate-400">No laboratory results found.</td></tr>` : '';
-
-      labsList.forEach(l => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="p-3 text-slate-500">${escapeHTML(l.test_date)}</td>
-          <td class="p-3 font-semibold text-slate-800">${escapeHTML(l.lab_name)}</td>
-          <td class="p-3 font-bold theme-primary-text">${escapeHTML(l.result_value)} ${escapeHTML(l.unit || '')}</td>
-          <td class="p-3 text-slate-500">${escapeHTML(l.normal_range || '--')}</td>
-          <td class="p-3 text-slate-400">${escapeHTML(l.source || 'Manual')}</td>
-          <td class="p-3 text-right"><button data-action="delete-sub" data-table="patient_labs" data-record-id="${escapeHTML(l.id)}" class="text-xs text-red-500 hover:underline font-semibold">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function filterLabsTable() {
-      const q = document.getElementById('lab-search-input').value.toLowerCase().trim();
-      const filtered = currentPatientLabsData.filter(l => 
-        l.lab_name.toLowerCase().includes(q) ||
-        l.test_date.includes(q) ||
-        String(l.result_value).includes(q)
-      );
-      renderLabsTable(filtered);
-    }
-
-    function populateLabTrendsDropdown(labsList) {
-      const select = document.getElementById('lab-chart-select');
-      const uniqueLabs = [...new Set(labsList.map(l => l.lab_name))];
-      select.innerHTML = `<option value="">-- Choose Lab Test --</option>`;
-      uniqueLabs.forEach(lab => {
-        const opt = document.createElement('option');
-        opt.value = escapeHTML(lab);
-        opt.textContent = escapeHTML(lab);
-        select.appendChild(opt);
-      });
-
-      if (uniqueLabs.length > 0) {
-        select.value = uniqueLabs[0];
-        renderLabChart();
-      }
-    }
-
-    function renderLabChart() {
-      const selectedLab = document.getElementById('lab-chart-select').value;
-      const ctx = document.getElementById('labTrendChart').getContext('2d');
-
-      if (activeLabChart) activeLabChart.destroy();
-      if (!selectedLab) return;
-
-      const filtered = currentPatientLabsData
-        .filter(l => l.lab_name === selectedLab)
-        .sort((a, b) => new Date(a.test_date) - new Date(b.test_date));
-
-      if (filtered.length === 0) return;
-
-      activeLabChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: filtered.map(l => escapeHTML(l.test_date)),
-          datasets: [{
-            label: `${selectedLab} (${filtered[0]?.unit || ''})`,
-            data: filtered.map(l => l.result_value),
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 6,
-            pointHoverRadius: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: true, position: 'top' } }
-        }
-      });
-    }
-
-    // VISITS
-    function renderVisits(visitsList) {
-      const container = document.getElementById('visits-list');
-      container.innerHTML = visitsList.length === 0 ? `<p class="text-xs text-slate-400">No visits recorded.</p>` : '';
-
-      visitsList.forEach(v => {
-        const dateStr = new Date(v.visit_date).toLocaleDateString();
-        const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-4 rounded-2xl space-y-2";
-        div.innerHTML = `
-          <div class="flex justify-between items-center border-b pb-2">
-            <span class="font-bold text-xs text-slate-800">Visit Date: ${escapeHTML(dateStr)}</span>
-            <div class="flex gap-2">
-              <button data-action="edit-visit" data-visit-id="${escapeHTML(v.id)}" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-800 px-2.5 py-1 rounded-lg font-semibold flex items-center space-x-1">
-                <i data-lucide="edit-3" class="w-3 h-3"></i><span>Edit Note</span>
-              </button>
-              <button data-action="export-pdf" data-visit-id="${escapeHTML(v.id)}" class="text-[10px] bg-blue-50 text-blue-600 hover:bg-blue-100 px-2.5 py-1 rounded-lg font-semibold flex items-center space-x-1">
-                <i data-lucide="printer" class="w-3 h-3"></i><span>Export PDF</span>
-              </button>
-            </div>
-          </div>
-          <p class="text-xs text-slate-600"><strong>Chief Complaint:</strong> ${escapeHTML(v.chief_complaint || 'N/A')}</p>
-          <p class="text-xs text-slate-800 whitespace-pre-wrap mt-2 bg-white p-3 rounded-xl border border-slate-200 font-sans leading-relaxed">${escapeHTML(v.clinical_notes)}</p>
-        `;
-        container.appendChild(div);
-      });
-      lucide.createIcons();
-    }
-
-    function renderVitalsChart(vitalsList) {
-      if (activeVitalsChart) activeVitalsChart.destroy();
-      if (!vitalsList || vitalsList.length === 0) return;
-
-      const ctx = document.getElementById('vitalsTrendChart').getContext('2d');
-      activeVitalsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: vitalsList.map(v => new Date(v.measured_at).toLocaleDateString()),
-          datasets: [
-            { label: 'Systolic BP', data: vitalsList.map(v => v.bp_systolic), borderColor: '#dc2626' },
-            { label: 'Diastolic BP', data: vitalsList.map(v => v.bp_diastolic), borderColor: '#f97316' },
-            { label: 'Heart Rate', data: vitalsList.map(v => v.heart_rate), borderColor: '#2563eb' }
-          ]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
-    function renderRadiology(radList) {
-      const container = document.getElementById('radiology-list');
-      container.innerHTML = radList.length === 0 ? `<p class="text-xs text-slate-400">No radiology records.</p>` : '';
-
-      radList.forEach(r => {
-        const div = document.createElement('div');
-        div.className = "bg-slate-50 border p-4 rounded-2xl flex justify-between items-center";
-        div.innerHTML = `
-          <div><h4 class="font-bold text-slate-800 text-xs">${escapeHTML(r.title)}</h4><p class="text-[10px] text-slate-500">Date: ${escapeHTML(r.exam_date)}</p></div>
-          <a href="${sanitizeUrl(r.image_url)}" target="_blank" rel="noopener noreferrer" class="theme-primary-bg text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center space-x-1"><span>View Image</span><i data-lucide="external-link" class="w-3 h-3"></i></a>
-        `;
-        container.appendChild(div);
-      });
-      lucide.createIcons();
-    }
-
-    // AI GEMINI LAB EXTRACTION
-    function openGeminiLabModal() {
-      showModal(`
-        <h3 class="text-lg font-bold text-slate-900">AI Multimodal Lab Extraction (Gemini)</h3>
-        <p class="text-xs text-slate-500">Upload a lab report image and enter your Gemini API Key.</p>
-        <div class="space-y-3 pt-2">
-          <input type="password" id="gemini-key" class="w-full px-3 py-2 border rounded-xl text-xs" placeholder="Gemini API Key (AIzaSy...)">
-          <input type="file" id="gemini-file" accept="image/*" class="w-full text-xs text-slate-500">
-          <button id="btn-run-gemini" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl text-xs">Extract Labs with AI</button>
-        </div>
-      `);
-
-      document.getElementById('btn-run-gemini').addEventListener('click', async () => {
-        const key = document.getElementById('gemini-key').value.trim();
-        const fileInput = document.getElementById('gemini-file');
-        
-        if (!key || !fileInput.files[0]) {
-          alert("Please provide both a Gemini API key and an image file.");
-          return;
-        }
-
-        // Placeholder notice - ready for your Gemini Vision endpoint logic
-        alert("API Key and Image loaded. Connecting to Gemini API for lab extraction...");
-      });
-    }
-
-    // EXPORTS
-    async function exportVisitSummaryPDF(visitId) {
-      const { data: v } = await supabaseClient.from('patient_visits').select('*').eq('id', visitId).single();
-      const p = currentPatient;
-
-      document.getElementById('print-doc').textContent = escapeHTML(currentUserProfile.full_name);
-      document.getElementById('print-date').textContent = "Date: " + escapeHTML(new Date(v.visit_date).toLocaleDateString());
-      document.getElementById('print-patient-info').innerHTML = `
-        <p><strong>Patient Name:</strong> ${escapeHTML(p.full_name)}</p>
-        <p><strong>ID Number:</strong> ${escapeHTML(p.national_id)}</p>
-        <p><strong>Gender:</strong> ${escapeHTML(p.gender || 'N/A')}</p>
-        <p><strong>Phone:</strong> ${escapeHTML(p.phone || 'N/A')}</p>
-      `;
-      document.getElementById('print-complaint').textContent = escapeHTML(v.chief_complaint || 'N/A');
-      document.getElementById('print-notes').textContent = escapeHTML(v.clinical_notes);
-
-      const element = document.getElementById('print-template');
-      element.classList.remove('hidden');
-
-      await html2pdf().set({
-        margin: 0.5,
-        filename: `MediDesk_Visit_${p.full_name.replace(/\s+/g, '_')}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      }).from(element).save();
-
-      element.classList.add('hidden');
-    }
-
-    async function exportFilteredPatientsExcel() {
-      const { data: filtered } = await supabaseClient.from('patients').select('*');
-      const sheetData = (filtered || []).map(p => ({
-        "Full Name": p.full_name,
-        "ID Number": p.national_id,
-        "Phone": p.phone || '',
-        "DOB": p.dob,
-        "Gender": p.gender || '',
-        "Height (cm)": p.height_cm || '',
-        "Weight (kg)": p.weight_kg || '',
-        "BMI": calculateBMI(p.height_cm, p.weight_kg).val || ''
-      }));
-      const worksheet = XLSX.utils.json_to_sheet(sheetData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Patients");
-      XLSX.writeFile(workbook, `MediDesk_Patients_${new Date().toISOString().split('T')[0]}.xlsx`);
-    }
-
-    async function exportFullDatabaseJSON() {
-      const { data: patients } = await supabaseClient.from('patients').select('*, patient_allergies(*), patient_pmh(*), patient_psh(*), patient_medications(*), patient_labs(*), patient_visits(*), visit_vitals(*), patient_radiology(*)');
-      const blob = new Blob([JSON.stringify(patients, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `MediDesk_Full_Backup_${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-    }
-
-    // UTILITIES
-    function showSection(sectionId) {
-      document.getElementById('directory-section').classList.add('hidden');
-      document.getElementById('profile-section').classList.add('hidden');
-      document.getElementById('admin-section').classList.add('hidden');
-      document.getElementById(`${sectionId}-section`).classList.remove('hidden');
-    }
-
-    function switchTab(tabId, targetBtn) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('tab-active', 'text-slate-500'));
-      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-      targetBtn.classList.add('tab-active');
-
-      if (tabId === 'lab-trends') {
-        setTimeout(renderLabChart, 50);
-      }
-    }
-
-    function calculateAge(dobString) {
-      const dob = new Date(dobString);
-      return Math.floor((Date.now() - dob.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-    }
-
-    function calculateBMI(heightCm, weightKg) {
-      if (!heightCm || !weightKg) return { val: null, cat: '' };
-      const bmi = (weightKg / ((heightCm / 100) ** 2)).toFixed(1);
-      return { val: bmi, cat: bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal' : bmi < 30 ? 'Overweight' : 'Obese' };
-    }
-
-    function getBMIBadgeClass(val) {
-      if (!val) return 'bg-slate-100 text-slate-600';
-      if (val < 18.5) return 'bg-amber-100 text-amber-800';
-      if (val < 25) return 'bg-emerald-100 text-emerald-800';
-      return 'bg-red-100 text-red-800';
-    }
-
-    function showModal(contentHtml) {
-      const box = document.getElementById('modal-box');
-      box.innerHTML = contentHtml + `<div class="pt-4 border-t flex justify-end"><button onclick="closeModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">Close</button></div>`;
-      document.getElementById('modal-backdrop').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('modal-backdrop').classList.add('hidden');
-    }
-
-    async function deleteSubRecord(tableName, recordId) {
-      if (!confirm("Are you sure you want to delete this record?")) return;
-      await supabaseClient.from(tableName).delete().eq('id', recordId);
-      await loadProfileSubTables();
-    }
-
-    // CREATE & EDIT MODALS
-    function openNewPatientModal() {
-      showModal(`
-        <h3 class="text-base font-bold text-slate-900">Add New Patient</h3>
-        <form id="form-new-patient" class="space-y-3 pt-2">
-          <div><label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label><input type="text" id="m-name" required class="w-full border p-2 rounded-xl text-xs"></div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">National ID</label><input type="text" id="m-id" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Phone</label><input type="text" id="m-phone" class="w-full border p-2 rounded-xl text-xs"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Date of Birth</label><input type="date" id="m-dob" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Gender</label>
-              <select id="m-gender" class="w-full border p-2 rounded-xl text-xs">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Height (cm)</label><input type="number" id="m-height" placeholder="e.g. 175" class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Weight (kg)</label><input type="number" id="m-weight" placeholder="e.g. 70" class="w-full border p-2 rounded-xl text-xs"></div>
-          </div>
-          <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2.5 rounded-xl text-xs shadow-sm">Create Patient</button>
-        </form>
-      `);
-
-      document.getElementById('form-new-patient').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const payload = {
-          doctor_id: currentUser.id,
-          full_name: document.getElementById('m-name').value,
-          national_id: document.getElementById('m-id').value,
-          phone: document.getElementById('m-phone').value,
-          dob: document.getElementById('m-dob').value,
-          gender: document.getElementById('m-gender').value,
-          height_cm: parseFloat(document.getElementById('m-height').value) || null,
-          weight_kg: parseFloat(document.getElementById('m-weight').value) || null
-        };
-
-        const { data, error } = await supabaseClient.from('patients').insert([payload]).select().single();
-        if (error) return alert("Error adding patient: " + escapeHTML(error.message));
-
-        closeModal();
-        await fetchPatients();
-        if (data) openPatientProfile(data.id);
-      });
-    }
-
-    function openEditPatientProfileModal() {
-      const p = currentPatient;
-      showModal(`
-        <h3 class="text-base font-bold text-slate-900">Edit Patient Profile</h3>
-        <form id="form-edit-patient" class="space-y-3 pt-2">
-          <div><label class="block text-[10px] font-bold uppercase text-slate-600">Full Name</label><input type="text" id="m-name" value="${escapeHTML(p.full_name)}" required class="w-full border p-2 rounded-xl text-xs"></div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">National ID</label><input type="text" id="m-id" value="${escapeHTML(p.national_id)}" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Phone</label><input type="text" id="m-phone" value="${escapeHTML(p.phone || '')}" class="w-full border p-2 rounded-xl text-xs"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Date of Birth</label><input type="date" id="m-dob" value="${escapeHTML(p.dob)}" required class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Gender</label>
-              <select id="m-gender" class="w-full border p-2 rounded-xl text-xs">
-                <option value="Male" ${p.gender === 'Male' ? 'selected' : ''}>Male</option>
-                <option value="Female" ${p.gender === 'Female' ? 'selected' : ''}>Female</option>
-                <option value="Other" ${p.gender === 'Other' ? 'selected' : ''}>Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Height (cm)</label><input type="number" id="m-height" value="${p.height_cm || ''}" class="w-full border p-2 rounded-xl text-xs"></div>
-            <div><label class="block text-[10px] font-bold uppercase text-slate-600">Weight (kg)</label><input type="number" id="m-weight" value="${p.weight_kg || ''}" class="w-full border p-2 rounded-xl text-xs"></div>
-          </div>
-          <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2.5 rounded-xl text-xs shadow-sm">Update Profile</button>
-        </form>
-      `);
-
-      document.getElementById('form-edit-patient').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const payload = {
-          full_name: document.getElementById('m-name').value,
-          national_id: document.getElementById('m-id').value,
-          phone: document.getElementById('m-phone').value,
-          dob: document.getElementById('m-dob').value,
-          gender: document.getElementById('m-gender').value,
-          height_cm: parseFloat(document.getElementById('m-height').value) || null,
-          weight_kg: parseFloat(document.getElementById('m-weight').value) || null
-        };
-
-        const { error } = await supabaseClient.from('patients').update(payload).eq('id', p.id);
-        if (error) return alert("Update failed: " + escapeHTML(error.message));
-
-        closeModal();
-        await openPatientProfile(p.id);
-      });
-    }
-
-    function openAddAllergyModal() {
-      showModal(`
-        <h3 class="text-base font-bold text-slate-900">Add Drug Allergy</h3>
-        <form id="f-allergy" class="space-y-3 pt-2">
-          <div>
-            <label class="block text-[10px] font-bold uppercase text-slate-600">Allergy Name</label>
-            <input type="text" id="m-aname" list="dl-allergies" placeholder="Type allergy name..." required class="w-full border p-2 rounded-xl text-xs">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold uppercase text-slate-600">Reaction / Notes</label>
-            <input type="text" id="m-anotes" placeholder="e.g. Rash, Anaphylaxis" class="w-full border p-2 rounded-xl text-xs">
-          </div>
-          <button type="submit" class="w-full theme-primary-bg text-white font-semibold py-2 rounded-xl text-xs">Save Allergy</button>
-        </form>
-      `);
-
-      document.getElementById('f-allergy').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const aName = document.getElementById('m-aname').value.trim();
-        await ensureMasterExists('master_allergies', aName);
-
-        await supabaseClient.from('patient_allergies').insert([{
-          patient_id: currentPatient.id,
-          allergy_name: aName,
-          reaction_notes: document.getElementById('m-anotes').value.trim()
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    function openAddPMHModal() {
-      showModal(`
-        <h3 class="text-base font-bold">Add Medical Condition</h3>
-        <form id="f-pmh" class="space-y-3 pt-2">
-          <input type="text" id="m-disease" list="dl-diseases" placeholder="Type condition..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="number" id="m-year" value="${new Date().getFullYear()}" class="w-full border p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
-        </form>
-      `);
-
-      document.getElementById('f-pmh').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('m-disease').value.trim();
-        await ensureMasterExists('master_diseases', name);
-
-        await supabaseClient.from('patient_pmh').insert([{
-          patient_id: currentPatient.id,
-          disease_name: name,
-          onset_year: parseInt(document.getElementById('m-year').value)
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    function openAddPSHModal() {
-      showModal(`
-        <h3 class="text-base font-bold">Add Surgery</h3>
-        <form id="f-psh" class="space-y-3 pt-2">
-          <input type="text" id="m-surgery" list="dl-surgeries" placeholder="Type surgery..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="number" id="m-syear" value="${new Date().getFullYear()}" class="w-full border p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
-        </form>
-      `);
-
-      document.getElementById('f-psh').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('m-surgery').value.trim();
-        await ensureMasterExists('master_surgeries', name);
-
-        await supabaseClient.from('patient_psh').insert([{
-          patient_id: currentPatient.id,
-          surgery_name: name,
-          surgery_year: parseInt(document.getElementById('m-syear').value)
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    function openAddMedModal() {
-      showModal(`
-        <h3 class="text-base font-bold">Add Medication</h3>
-        <form id="f-med" class="space-y-3 pt-2">
-          <input type="text" id="m-mname" list="dl-medications" placeholder="Medication Name..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="text" id="m-mdose" placeholder="Dose (e.g. 500mg)" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="text" id="m-mfreq" placeholder="Frequency (e.g. Twice Daily)" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="text" id="m-mroute" value="Oral" required class="w-full border p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
-        </form>
-      `);
-
-      document.getElementById('f-med').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('m-mname').value.trim();
-        await ensureMasterExists('master_medications', name);
-
-        await supabaseClient.from('patient_medications').insert([{
-          patient_id: currentPatient.id,
-          medication_name: name,
-          dose: document.getElementById('m-mdose').value,
-          frequency: document.getElementById('m-mfreq').value,
-          route: document.getElementById('m-mroute').value
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    function openAddLabModal() {
-      showModal(`
-        <h3 class="text-base font-bold">Add Lab Result</h3>
-        <form id="f-lab" class="space-y-3 pt-2">
-          <input type="text" id="m-lname" list="dl-labs" placeholder="Lab Test Name..." required class="w-full border p-2 rounded-xl text-xs">
-          <input type="number" step="0.01" id="m-lval" placeholder="Result Value" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="date" id="m-ldate" value="${new Date().toISOString().split('T')[0]}" required class="w-full border p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save</button>
-        </form>
-      `);
-
-      document.getElementById('f-lab').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = document.getElementById('m-lname').value.trim();
-        await ensureMasterExists('master_labs', name);
-
-        const labMeta = masterLabs.find(x => x.name.toLowerCase() === name.toLowerCase()) || {};
-
-        await supabaseClient.from('patient_labs').insert([{
-          patient_id: currentPatient.id,
-          lab_name: name,
-          result_value: parseFloat(document.getElementById('m-lval').value),
-          unit: labMeta.unit || '',
-          normal_range: labMeta.normal_range || '',
-          test_date: document.getElementById('m-ldate').value
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    async function openVisitModal(visitId = null) {
-      let existingNotes = '';
-      let existingComplaint = '';
-
-      if (visitId) {
-        const { data } = await supabaseClient.from('patient_visits').select('*').eq('id', visitId).single();
-        if (data) {
-          existingNotes = data.clinical_notes;
-          existingComplaint = data.chief_complaint || '';
-        }
-      }
-
-      showModal(`
-        <div class="space-y-3">
-          <div class="border-b pb-2">
-            <h3 class="text-base font-bold text-slate-900">${visitId ? 'Edit Clinical Visit Note' : 'Record Clinical Encounter'}</h3>
-          </div>
-          
-          <form id="f-visit-editor" class="space-y-3">
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Chief Complaint</label>
-              <input type="text" id="m-comp" value="${escapeHTML(existingComplaint)}" placeholder="e.g. Chest pain on exertion" class="w-full border p-2.5 rounded-xl text-xs font-medium">
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold uppercase text-slate-600">Clinical Notes</label>
-              <textarea id="m-vnotes" rows="12" placeholder="Write free-text clinical notes, history, examination findings, and management plans here..." required class="w-full border p-3 rounded-xl text-xs font-sans leading-relaxed">${escapeHTML(existingNotes)}</textarea>
-            </div>
-            <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">${visitId ? 'Update Visit Note' : 'Save Visit Note'}</button>
-          </form>
-        </div>
-      `);
-
-      document.getElementById('f-visit-editor').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const payload = {
-          patient_id: currentPatient.id,
-          chief_complaint: document.getElementById('m-comp').value,
-          clinical_notes: document.getElementById('m-vnotes').value
-        };
-
-        if (visitId) {
-          await supabaseClient.from('patient_visits').update(payload).eq('id', visitId);
-        } else {
-          await supabaseClient.from('patient_visits').insert([payload]);
-        }
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    function openAddVitalsModal() {
-      showModal(`
-        <h3 class="text-base font-bold">Add Vital Signs</h3>
-        <form id="f-vitals" class="space-y-3 pt-2">
-          <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="m-sys" placeholder="Systolic BP" class="border p-2 rounded-xl text-xs">
-            <input type="number" id="m-dia" placeholder="Diastolic BP" class="border p-2 rounded-xl text-xs">
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="m-hr" placeholder="Heart Rate" class="border p-2 rounded-xl text-xs">
-            <input type="number" id="m-spo2" placeholder="SpO2 (%)" class="border p-2 rounded-xl text-xs">
-          </div>
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save Vitals</button>
-        </form>
-      `);
-
-      document.getElementById('f-vitals').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await supabaseClient.from('visit_vitals').insert([{
-          patient_id: currentPatient.id,
-          bp_systolic: parseInt(document.getElementById('m-sys').value) || null,
-          bp_diastolic: parseInt(document.getElementById('m-dia').value) || null,
-          heart_rate: parseInt(document.getElementById('m-hr').value) || null,
-          spo2: parseInt(document.getElementById('m-spo2').value) || null
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-
-    function openAddRadiologyModal() {
-      showModal(`
-        <h3 class="text-base font-bold">Add Radiology Link</h3>
-        <form id="f-rad" class="space-y-3 pt-2">
-          <input type="text" id="m-rtitle" placeholder="Exam Title" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="url" id="m-rurl" placeholder="Image URL (https://...)" required class="w-full border p-2 rounded-xl text-xs">
-          <input type="date" id="m-rdate" value="${new Date().toISOString().split('T')[0]}" required class="w-full border p-2 rounded-xl text-xs">
-          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save Radiology</button>
-        </form>
-      `);
-
-      document.getElementById('f-rad').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await supabaseClient.from('patient_radiology').insert([{
-          patient_id: currentPatient.id,
-          title: document.getElementById('m-rtitle').value,
-          image_url: document.getElementById('m-rurl').value,
-          exam_date: document.getElementById('m-rdate').value
-        }]);
-
-        closeModal();
-        await loadProfileSubTables();
-      });
-    }
-  </script>
+      </div>
+      <div class="form-group">
+        <label>Unit (e.g. mg/dL, g/dL, U/L)</label>
+        <input type="text" id="lab-unit" required />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('lab-test-modal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Test</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Patient Lab Entry Modal -->
+  <dialog id="record-lab-modal" class="custom-modal">
+    <form id="record-lab-form" method="dialog">
+      <h3>Record Patient Lab Result</h3>
+      <div class="form-group">
+        <label>Select Lab Test</label>
+        <select id="record-lab-select" required></select>
+      </div>
+      <div class="form-group">
+        <label>Result Value</label>
+        <input type="text" id="record-lab-value" required />
+      </div>
+      <div class="form-group">
+        <label>Test Date</label>
+        <input type="date" id="record-lab-date" required />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('record-lab-modal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Result</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
 </body>
 </html>
