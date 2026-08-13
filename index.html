@@ -173,10 +173,6 @@
               <i data-lucide="user-cog" class="w-4 h-4"></i>
               <span class="hidden sm:inline">Edit Profile</span>
             </button>
-            <button id="btn-open-gemini" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm">
-              <i data-lucide="sparkles" class="w-4 h-4"></i>
-              <span>AI Lab Import</span>
-            </button>
           </div>
         </div>
 
@@ -708,7 +704,6 @@
       document.getElementById('filter-medication').addEventListener('input', fetchPatients);
 
       document.getElementById('btn-back-directory').addEventListener('click', () => showSection('directory'));
-      document.getElementById('btn-open-gemini').addEventListener('click', openGeminiLabModal);
 
       document.getElementById('btn-add-pmh').addEventListener('click', openAddPMHModal);
       document.getElementById('btn-add-psh').addEventListener('click', openAddPSHModal);
@@ -1485,31 +1480,6 @@
       lucide.createIcons();
     }
 
-    // AI GEMINI LAB EXTRACTION
-    function openGeminiLabModal() {
-      showModal(`
-        <h3 class="text-lg font-bold text-app">AI Multimodal Lab Extraction (Gemini)</h3>
-        <p class="text-xs text-muted">Upload a lab report image and enter your Gemini API Key.</p>
-        <div class="space-y-3 pt-2">
-          <input type="password" id="gemini-key" class="input-app w-full px-3 py-2 rounded-xl text-xs" placeholder="Gemini API Key (AIzaSy...)">
-          <input type="file" id="gemini-file" accept="image/*" class="input-app w-full text-xs text-muted">
-          <button id="btn-run-gemini" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl text-xs">Extract Labs with AI</button>
-        </div>
-      `);
-
-      document.getElementById('btn-run-gemini').addEventListener('click', async () => {
-        const key = document.getElementById('gemini-key').value.trim();
-        const fileInput = document.getElementById('gemini-file');
-        
-        if (!key || !fileInput.files[0]) {
-          alert("Please provide both a Gemini API key and an image file.");
-          return;
-        }
-
-        alert("API Key and Image loaded. Connecting to Gemini API for lab extraction...");
-      });
-    }
-
     // EXPORTS
     async function exportVisitSummaryPDF(visitId) {
       const { data: v } = await supabaseClient.from('patient_visits').select('*').eq('id', visitId).single();
@@ -2012,35 +1982,32 @@
 
     function openAddRadiologyModal() {
       showModal(`
-        <h3 class="text-base font-bold text-app">Add Radiology Link</h3>
-        <form id="f-rad" class="space-y-3 pt-2">
+        <h3 class="text-base font-bold text-app">Add Radiology Record</h3>
+        <form id="f-radiology" class="space-y-3 pt-2">
           <div>
-            <label class="block text-[10px] font-bold uppercase text-muted">Title / Exam Type</label>
+            <label class="block text-[10px] font-bold uppercase text-muted">Title / Exam Name</label>
             <input type="text" id="m-rad-title" placeholder="e.g. Chest X-Ray PA View" required class="input-app w-full p-2 rounded-xl text-xs">
           </div>
           <div>
-            <label class="block text-[10px] font-bold uppercase text-muted">Image / DICOM / Drive URL</label>
+            <label class="block text-[10px] font-bold uppercase text-muted">Image / Report URL</label>
             <input type="url" id="m-rad-url" placeholder="https://..." required class="input-app w-full p-2 rounded-xl text-xs">
           </div>
           <div>
             <label class="block text-[10px] font-bold uppercase text-muted">Exam Date</label>
             <input type="date" id="m-rad-date" value="${new Date().toISOString().split('T')[0]}" required class="input-app w-full p-2 rounded-xl text-xs">
           </div>
-          <button type="submit" class="w-full theme-primary-bg text-white py-2.5 rounded-xl text-xs font-semibold shadow-sm">Save Radiology Record</button>
+          <button type="submit" class="w-full theme-primary-bg text-white py-2 rounded-xl text-xs font-semibold">Save Radiology Record</button>
         </form>
       `);
 
-      document.getElementById('f-rad').addEventListener('submit', async (e) => {
+      document.getElementById('f-radiology').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const payload = {
+        await supabaseClient.from('patient_radiology').insert([{
           patient_id: currentPatient.id,
           title: document.getElementById('m-rad-title').value.trim(),
           image_url: document.getElementById('m-rad-url').value.trim(),
           exam_date: document.getElementById('m-rad-date').value
-        };
-
-        const { error } = await supabaseClient.from('patient_radiology').insert([payload]);
-        if (error) return alert("Error adding radiology record: " + escapeHTML(error.message));
+        }]);
 
         closeModal();
         await loadProfileSubTables();
